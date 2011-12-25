@@ -6,6 +6,7 @@
     using System.IO;
     using HandBrake.ApplicationServices;
     using HandBrake.ApplicationServices.Services;
+    using System.Windows;
 
     public abstract class EncodeInfo : INotifyPropertyChanged
     {
@@ -16,7 +17,9 @@
         string eta;
         bool isEncoding;
         readonly MainWindow mainWindow;
+        string outputPath;
         float percentComplete;
+        SettingError settingError;
 
         protected EncodeInfo(MainWindow mainWindow, Queue encodingQueue)
         {
@@ -26,6 +29,10 @@
             this.encodingQueue.EncodeStarted += OnEncodeStarted;
             this.encodingQueue.EncodeStatusChanged += OnEncodeStatusChanged;
             this.encodingQueue.EncodeEnded += OnEncodeEnded;
+
+            DependencyPropertyDescriptor descriptor;
+            descriptor = DependencyPropertyDescriptor.FromProperty(MainWindow.SourceDriveProperty, typeof(MainWindow));
+            descriptor.AddValueChanged(this.mainWindow, (o, e) => CheckSettingErrors());            
         }
 
         public string ETA
@@ -45,9 +52,15 @@
             get { return this.mainWindow.OpticalDrives; }
         }
 
-        protected string OutputPath
+        public string OutputPath
         {
-            get { return this.mainWindow.OutputPath; }
+            get { return this.outputPath; }
+            set 
+            { 
+                this.outputPath = value; 
+                Notify("OutputPath");
+                CheckSettingErrors();
+            }
         }
 
         public float PercentComplete
@@ -56,19 +69,43 @@
             set { this.percentComplete = value; Notify("PercentComplete"); }
         }
 
-        public bool SettingsValid
+        public SettingError SettingError
         {
-            get { return this.mainWindow.SettingsValid; }
+            get { return this.settingError; }
+            set 
+            {
+                if (this.settingError != value)
+                {
+                    this.settingError = value; 
+                    Notify("SettingError");
+                }
+            }
         }
 
         protected DriveInfo SourceDrive
         {
-            get { return this.mainWindow.SourceDrive; }           
+            get { return this.mainWindow.SourceDrive; }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected abstract void AddEncodingJobs(Queue encodingQueue);
+        
+        void CheckSettingErrors()
+        {
+            if (SourceDrive == null)
+            {
+                SettingError = SettingError.NoDVD;
+            }
+            else if (String.IsNullOrWhiteSpace(OutputPath))
+            {
+                SettingError = SettingError.NoOutputPath;
+            }
+            else
+            {
+                SettingError = SettingError.OK;
+            }
+        }
 
         protected static string EscapeFileName(string fileName)
         {
@@ -87,21 +124,24 @@
         void OnEncodeEnded(object sender, EventArgs e)
         {
             IsEncoding = false;
-            ETA = "";
-            PercentComplete = 0;
+            ETA = "Complete";
+            PercentComplete = 1;
         }
 
         void OnEncodeStarted(object sender, EventArgs e)
         {
             IsEncoding = true;
-            ETA = "";
+            ETA = "Starting...";
             PercentComplete = 0;
         }
 
         void OnEncodeStatusChanged(object sender, EncodeProgressEventArgs e)
         {
-            ETA = e.EstimatedTimeLeft;
-            PercentComplete = e.PercentComplete;
+            if (IsEncoding)
+            {
+                PercentComplete = e.PercentComplete;
+                ETA = String.Format("{0}% Complete. ETA: {1}", Math.Round(e.PercentComplete * 100), e.EstimatedTimeLeft);
+            }
         }
 
         public void Start()

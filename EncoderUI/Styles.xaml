@@ -60,6 +60,12 @@
         </Setter>
         <Setter Property="Margin" Value="0,0,0,40" />
     </Style>
+    <Style TargetType="TextBlock" x:Key="settingLabel" BasedOn="{StaticResource entryLabel}">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="TextAlignment" Value="Right" />
+        <Setter Property="Margin" Value="10" />
+    </Style>
     <Style TargetType="TextBox" x:Key="textEntry">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />

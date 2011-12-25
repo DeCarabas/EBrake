@@ -6,12 +6,19 @@
 
     <Window.Resources>
         <Style TargetType="Button" x:Key="SettingsWarningBar" BasedOn="{StaticResource WarningBar}">
-            <Setter Property="Content">
-                <Setter.Value>Some settings are missing. Click here to go to the settings tab.</Setter.Value>
-            </Setter>
+            <Setter Property="Visibility" Value="Hidden" />
             <Style.Triggers>
-                <DataTrigger Binding="{Binding SettingsValid}" Value="true">
-                    <Setter Property="Visibility"  Value="Hidden" />
+                <DataTrigger Binding="{Binding SettingError}" Value="NoDVD">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Setter Property="Content">
+                        <Setter.Value>No DVD drive has been selected. Click here to choose the source drive.</Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding SettingError}" Value="NoOutputPath">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Setter Property="Content">
+                        <Setter.Value>Don't know where to put the output file. Click here to set the output path.</Setter.Value>
+                    </Setter>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -19,26 +26,27 @@
         <Style TargetType="Button" x:Key="DownloadButton" BasedOn="{StaticResource MetroCircleButtonStyle}">
             <Setter Property="Width" Value="55" />
             <Setter Property="Height" Value="55" />
+            <Setter Property="IsEnabled"  Value="false" />
             <Setter Property="ContentTemplate">
                 <Setter.Value>
                     <DataTemplate>
                         <Rectangle Width="20" Height="20">
                             <Rectangle.Fill>
-                                <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_download}" />
+                                <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_download_disabled}" />
                             </Rectangle.Fill>
                         </Rectangle>
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding SettingsValid}" Value="false">
-                    <Setter Property="Button.IsEnabled"  Value="false" />
+                <DataTrigger Binding="{Binding SettingError}" Value="OK">
+                    <Setter Property="Button.IsEnabled"  Value="true" />
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
                             <DataTemplate>
                                 <Rectangle Width="20" Height="20">
                                     <Rectangle.Fill>
-                                        <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_download_disabled}" />
+                                        <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_download}" />
                                     </Rectangle.Fill>
                                 </Rectangle>
                             </DataTemplate>
@@ -51,12 +59,10 @@
     
     <Controls:MetroContentControl>
         <Grid>
-
             <TabControl x:Name="Tabs">
-                <TabItem Header="Movie">
+                <TabItem Header="Movie" DataContext="{Binding Path=MovieEncodeInfo}">
                     <Controls:MetroContentControl>
-                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
-                              DataContext="{Binding Path=MovieEncodeInfo}">
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="auto" />
@@ -74,7 +80,7 @@
                             <Image Grid.RowSpan="5" Source="/EncoderUI;component/Popcorn.jpg" 
                                    HorizontalAlignment="Center" Stretch="UniformToFill" />
 
-                            <Button Click="OnSettingsClicked" Style="{StaticResource SettingsWarningBar}" />
+                            <Button Click="OnFixSettingsClicked" Style="{StaticResource SettingsWarningBar}" />
 
                             <TextBox Grid.Row="1" Text="{Binding Path=MovieTitle}" Margin="10" TextAlignment="Center" 
                                      FontSize="24" />
@@ -84,14 +90,14 @@
                                      FontSize="24" />
                             <TextBlock Grid.Row="4" Style="{StaticResource entryLabel}" Text="Movie Year" />
 
-                            <ProgressBar Grid.Row="5" />
-                            <TextBlock Grid.Row="6" HorizontalAlignment="Center" Text="" />
+                            <ProgressBar Grid.Row="5" Value="{Binding Path=PercentComplete}" />
+                            <TextBlock Grid.Row="6" HorizontalAlignment="Center" Text="{Binding Path=ETA}" />
 
                             <Button Grid.Row="7" Style="{StaticResource DownloadButton}" Click="OnStartButtonClicked" />                                
                         </Grid>
                     </Controls:MetroContentControl>
                 </TabItem>
-                <TabItem Header="TV Series">
+                <TabItem Header="TV Show" DataContext="{Binding Path=TVShowEncodeInfo}">
                     <Controls:MetroContentControl>
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Grid.RowDefinitions>
@@ -111,7 +117,7 @@
                             <Image Grid.RowSpan="5" Grid.ColumnSpan="2" Source="/EncoderUI;component/Static.jpg" 
                                    HorizontalAlignment="Center"  Stretch="UniformToFill" />
 
-                            <Button Click="OnSettingsClicked" Grid.ColumnSpan="2" 
+                            <Button Click="OnFixSettingsClicked" Grid.ColumnSpan="2" 
                                     Style="{StaticResource SettingsWarningBar}" />
 
                             <TextBox Grid.Row="1" Text="{Binding Path=Series}" Margin="10" TextAlignment="Center" 
@@ -133,16 +139,24 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Row="0" Style="{StaticResource entryLabel}" Text="Source DVD" />
-                        <ComboBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" 
-                                        VerticalAlignment="Center" ItemsSource="{Binding Path=OpticalDrives}" 
-                                        SelectedItem="{Binding Path=SourceDrive}">
+                        
+                        <Image Grid.RowSpan="6" Grid.ColumnSpan="2" Source="/EncoderUI;component/HardDrive.jpg" 
+                                   HorizontalAlignment="Center"  Stretch="UniformToFill" />
+
+                        <TextBlock Grid.Row="1" Style="{StaticResource settingLabel}" Text="Source Drive" />
+                        <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                                  ItemsSource="{Binding Path=OpticalDrives}" SelectedItem="{Binding Path=SourceDrive}"
+                                  Margin="10" x:Name="SourceDriveBox" >
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <WrapPanel>
@@ -153,8 +167,15 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
 
-                        <TextBlock Grid.Row="1" Style="{StaticResource entryLabel}" Text="Destination" />
-                        <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource textEntry}" Text="{Binding Path=OutputPath}" />
+                        <TextBlock Grid.Row="2" Style="{StaticResource settingLabel}" Text="Movie Output Path" />
+                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=MovieEncodeInfo.OutputPath}" 
+                                 VerticalAlignment="Center" Margin="10"/>
+
+                        <TextBlock Grid.Row="3" Style="{StaticResource settingLabel}" Text="TV Show Output Path" />
+                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=TVShowEncodeInfo.OutputPath}" 
+                                 VerticalAlignment="Center" Margin="10"/>
+
+                        <Button Grid.Row="4" Grid.Column="2" Margin="10">Find Plex Server</Button>
                     </Grid>
                 </TabItem>
             </TabControl>

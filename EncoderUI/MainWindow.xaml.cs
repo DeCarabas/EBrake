@@ -25,13 +25,11 @@
     {
         public static readonly DependencyProperty MovieEncodeInfoProperty = DependencyProperty.Register(
             "MovieEncodeInfo", typeof(MovieEncodeInfo), typeof(MainWindow));
-        public static readonly DependencyProperty OutputPathProperty = DependencyProperty.Register(
-            "OutputPath", typeof(string), typeof(MainWindow), new PropertyMetadata(String.Empty, OnSettingsChanged));
-        public static readonly DependencyProperty SettingsValidProperty = DependencyProperty.Register(
-            "SettingsValid", typeof(bool), typeof(MainWindow));
         public static readonly DependencyProperty SourceDriveProperty = DependencyProperty.Register(
-            "SourceDrive", typeof(DriveInfo), typeof(MainWindow), new PropertyMetadata(null, OnSettingsChanged));
-        
+            "SourceDrive", typeof(DriveInfo), typeof(MainWindow));
+        public static readonly DependencyProperty TVShowEncodeInfoProperty = DependencyProperty.Register(
+            "TVShowEncodeInfo", typeof(TVShowEncodeInfo), typeof(MainWindow));
+
         HwndSource interopSource;
         readonly Queue encodeQueue = new Queue();
         readonly ObservableCollection<DriveInfo> opticalDrives = new ObservableCollection<DriveInfo>();
@@ -39,7 +37,7 @@
         readonly TaskScheduler wpfScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
         public MainWindow()
-        {            
+        {
             DataContext = this;
 
             InitializeComponent();
@@ -48,9 +46,10 @@
             RegisterDeviceChange();
 
             MovieEncodeInfo = new MovieEncodeInfo(this, this.encodeQueue);
+            TVShowEncodeInfo = new TVShowEncodeInfo(this, this.encodeQueue);
         }
 
-        public MovieEncodeInfo MovieEncodeInfo 
+        public MovieEncodeInfo MovieEncodeInfo
         {
             get { return (MovieEncodeInfo)GetValue(MovieEncodeInfoProperty); }
             set { SetValue(MovieEncodeInfoProperty, value); }
@@ -58,22 +57,16 @@
 
         public IList<DriveInfo> OpticalDrives { get { return this.opticalDrives; } }
 
-        public string OutputPath
-        {
-            get { return (string)GetValue(OutputPathProperty); }
-            set { SetValue(OutputPathProperty, value); }
-        }
-
-        public bool SettingsValid
-        {
-            get { return (bool)GetValue(SettingsValidProperty); }
-            set { SetValue(SettingsValidProperty, value); }
-        }
-
         public DriveInfo SourceDrive
         {
             get { return (DriveInfo)GetValue(SourceDriveProperty); }
             set { SetValue(SourceDriveProperty, value); }
+        }
+
+        public TVShowEncodeInfo TVShowEncodeInfo
+        {
+            get { return (TVShowEncodeInfo)GetValue(TVShowEncodeInfoProperty); }
+            set { SetValue(TVShowEncodeInfoProperty, value); }
         }
 
         IntPtr MessageHook(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
@@ -102,15 +95,10 @@
             return IntPtr.Zero;
         }
 
-        static void OnSettingsChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-        {
-            var that = (MainWindow)o;
-            that.SettingsValid = (that.SourceDrive != null) && (!String.IsNullOrWhiteSpace(that.OutputPath));
-        }
-
-        void OnSettingsClicked(object sender, RoutedEventArgs e)
+        void OnFixSettingsClicked(object sender, RoutedEventArgs e)
         {
             Tabs.SelectedItem = SettingsTab;
+            // TODO: Focus appropriately
         }
 
         void OnStartButtonClicked(object sender, RoutedEventArgs e)
@@ -150,7 +138,7 @@
         {
             Task<DriveInfo[]> getDrives = Task.Factory.StartNew(() =>
             {
-                return DriveInfo.GetDrives().Where(d => (d.DriveType == DriveType.CDRom && d.IsReady)).ToArray();
+                return DriveInfo.GetDrives().Where(d => (d.DriveType == DriveType.CDRom)).ToArray();
             });
 
             return getDrives.ContinueWith(d =>
@@ -165,7 +153,7 @@
                 }
                 else if (SourceDrive == null || !SourceDrive.IsReady)
                 {
-                    SourceDrive = this.opticalDrives[0];
+                    SourceDrive = this.opticalDrives.FirstOrDefault(drv => drv.IsReady) ?? this.opticalDrives[0];
                 }
             }, this.wpfScheduler);
         }

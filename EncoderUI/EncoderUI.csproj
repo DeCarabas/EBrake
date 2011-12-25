@@ -85,6 +85,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="TVShowEncodeInfo.cs" />
+    <Compile Include="SettingError.cs" />
     <Compile Include="EncodeInfo.cs" />
     <Compile Include="MovieEncodeInfo.cs" />
     <Compile Include="Interop\SafeNativeMethods.cs" />
@@ -124,6 +126,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Static.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="HardDrive.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
