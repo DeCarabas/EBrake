@@ -91,18 +91,12 @@
 
         void OnScanCompleted(object sender, EventArgs e)
         {
-            Dispatcher.BeginInvoke(() =>
-            {
-                if (scanService.SouceData.Titles.Count > 0)
-                {
-                    status.Text = scanService.SouceData.Titles.Find(t => t.MainTitle).Duration.ToString();
-                }
-            });
+
         }
 
         void OnScanStatusChanged(object sender, EventArgs e)
         {
-            Dispatcher.BeginInvoke(() => { status.Text = scanService.ScanStatus; });
+
         }
 
         static void OnSelectedDriveChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
@@ -116,6 +110,11 @@
             var interopHelper = new WindowInteropHelper(this);
             this.interopSource = HwndSource.FromHwnd(interopHelper.EnsureHandle());
             this.interopSource.AddHook(MessageHook);
+        }
+
+        void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            Tabs.SelectedItem = SettingsTab;
         }
 
         static void SetupHandbrake()
