@@ -23,11 +23,15 @@
     /// </summary>
     public partial class MainWindow : Window
     {
-        static readonly DependencyProperty movieEncodeInfoProperty = DependencyProperty.Register(
+        public static readonly DependencyProperty MovieEncodeInfoProperty = DependencyProperty.Register(
             "MovieEncodeInfo", typeof(MovieEncodeInfo), typeof(MainWindow));
-        static readonly DependencyProperty outputPathProperty = DependencyProperty.Register(
-            "OutputPath", typeof(string), typeof(MainWindow), new PropertyMetadata(String.Empty));
-
+        public static readonly DependencyProperty OutputPathProperty = DependencyProperty.Register(
+            "OutputPath", typeof(string), typeof(MainWindow), new PropertyMetadata(String.Empty, OnSettingsChanged));
+        public static readonly DependencyProperty SettingsValidProperty = DependencyProperty.Register(
+            "SettingsValid", typeof(bool), typeof(MainWindow));
+        public static readonly DependencyProperty SourceDriveProperty = DependencyProperty.Register(
+            "SourceDrive", typeof(DriveInfo), typeof(MainWindow), new PropertyMetadata(null, OnSettingsChanged));
+        
         HwndSource interopSource;
         readonly Queue encodeQueue = new Queue();
         readonly ObservableCollection<DriveInfo> opticalDrives = new ObservableCollection<DriveInfo>();
@@ -43,24 +47,33 @@
             StartRefreshOpticalDrives();
             RegisterDeviceChange();
 
-            this.scanService.ScanStatusChanged += OnScanStatusChanged;
-            this.scanService.ScanCompleted += OnScanCompleted;
-
             MovieEncodeInfo = new MovieEncodeInfo(this, this.encodeQueue);
         }
 
         public MovieEncodeInfo MovieEncodeInfo 
-        { 
-            get { return (MovieEncodeInfo)GetValue(movieEncodeInfoProperty); }
-            set { SetValue(movieEncodeInfoProperty, value); }
+        {
+            get { return (MovieEncodeInfo)GetValue(MovieEncodeInfoProperty); }
+            set { SetValue(MovieEncodeInfoProperty, value); }
         }
 
         public IList<DriveInfo> OpticalDrives { get { return this.opticalDrives; } }
 
         public string OutputPath
         {
-            get { return (string)GetValue(outputPathProperty); }
-            set { SetValue(outputPathProperty, value); }
+            get { return (string)GetValue(OutputPathProperty); }
+            set { SetValue(OutputPathProperty, value); }
+        }
+
+        public bool SettingsValid
+        {
+            get { return (bool)GetValue(SettingsValidProperty); }
+            set { SetValue(SettingsValidProperty, value); }
+        }
+
+        public DriveInfo SourceDrive
+        {
+            get { return (DriveInfo)GetValue(SourceDriveProperty); }
+            set { SetValue(SourceDriveProperty, value); }
         }
 
         IntPtr MessageHook(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
@@ -89,20 +102,20 @@
             return IntPtr.Zero;
         }
 
-        void OnScanCompleted(object sender, EventArgs e)
-        {
-
-        }
-
-        void OnScanStatusChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        static void OnSelectedDriveChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        static void OnSettingsChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var that = (MainWindow)o;
-            that.StartRefreshScan();
+            that.SettingsValid = (that.SourceDrive != null) && (!String.IsNullOrWhiteSpace(that.OutputPath));
+        }
+
+        void OnSettingsClicked(object sender, RoutedEventArgs e)
+        {
+            Tabs.SelectedItem = SettingsTab;
+        }
+
+        void OnStartButtonClicked(object sender, RoutedEventArgs e)
+        {
+            MovieEncodeInfo.Start();
         }
 
         void RegisterDeviceChange()
@@ -110,11 +123,6 @@
             var interopHelper = new WindowInteropHelper(this);
             this.interopSource = HwndSource.FromHwnd(interopHelper.EnsureHandle());
             this.interopSource.AddHook(MessageHook);
-        }
-
-        void Settings_Click(object sender, RoutedEventArgs e)
-        {
-            Tabs.SelectedItem = SettingsTab;
         }
 
         static void SetupHandbrake()
@@ -138,11 +146,6 @@
                 preventSleep: false);
         }
 
-        void StartButton_Click(object sender, RoutedEventArgs e)
-        {
-            MovieEncodeInfo.Start();
-        }
-
         Task StartRefreshOpticalDrives()
         {
             Task<DriveInfo[]> getDrives = Task.Factory.StartNew(() =>
@@ -158,23 +161,13 @@
 
                 if (this.opticalDrives.Count == 0)
                 {
-                    MovieEncodeInfo.SourceDrive = null;
+                    SourceDrive = null;
                 }
-                else if (MovieEncodeInfo.SourceDrive == null || !MovieEncodeInfo.SourceDrive.IsReady)
+                else if (SourceDrive == null || !SourceDrive.IsReady)
                 {
-                    MovieEncodeInfo.SourceDrive = this.opticalDrives[0];
+                    SourceDrive = this.opticalDrives[0];
                 }
             }, this.wpfScheduler);
         }
-
-        void StartRefreshScan()
-        {
-            if (MovieEncodeInfo.SourceDrive != null)
-            {
-                if (this.scanService.IsScanning) { this.scanService.Stop(); }
-                this.scanService.Scan(MovieEncodeInfo.SourceDrive.RootDirectory.FullName, 0);
-            }
-        }
-
     }
 }

@@ -16,9 +16,7 @@
         string eta;
         bool isEncoding;
         readonly MainWindow mainWindow;
-        string outputPath;
         float percentComplete;
-        DriveInfo sourceDrive;
 
         protected EncodeInfo(MainWindow mainWindow, Queue encodingQueue)
         {
@@ -47,10 +45,9 @@
             get { return this.mainWindow.OpticalDrives; }
         }
 
-        public string OutputPath
+        protected string OutputPath
         {
-            get { return this.outputPath; }
-            set { this.outputPath = value; }
+            get { return this.mainWindow.OutputPath; }
         }
 
         public float PercentComplete
@@ -59,10 +56,14 @@
             set { this.percentComplete = value; Notify("PercentComplete"); }
         }
 
-        public DriveInfo SourceDrive
+        public bool SettingsValid
         {
-            get { return this.sourceDrive; }
-            set { this.sourceDrive = value; Notify("SourceDrive"); }
+            get { return this.mainWindow.SettingsValid; }
+        }
+
+        protected DriveInfo SourceDrive
+        {
+            get { return this.mainWindow.SourceDrive; }           
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
