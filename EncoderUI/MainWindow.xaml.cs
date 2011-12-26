@@ -94,7 +94,7 @@
             }
             return IntPtr.Zero;
         }
-
+        
         void OnFixSettingsClicked(object sender, RoutedEventArgs e)
         {
             Tabs.SelectedItem = SettingsTab;
