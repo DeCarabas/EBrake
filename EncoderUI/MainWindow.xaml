@@ -1,7 +1,10 @@
 ﻿<Window x:Class="EncoderUI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:behaviours="clr-namespace:MahApps.Metro.Behaviours;assembly=MahApps.Metro"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:LocalControls="clr-namespace:EncoderUI.Controls"
         Title="Encoder" Height="709" Width="799">
 
     <Window.Resources>
@@ -24,6 +27,7 @@
         </Style>
 
         <Style TargetType="Button" x:Key="DownloadButton" BasedOn="{StaticResource MetroCircleButtonStyle}">
+            <Setter Property="Margin" Value="5" />
             <Setter Property="Width" Value="55" />
             <Setter Property="Height" Value="55" />
             <Setter Property="IsEnabled"  Value="false" />
@@ -56,13 +60,24 @@
             </Style.Triggers>
         </Style>
     </Window.Resources>
-    
-    <Controls:MetroContentControl>
-        <Grid>
+
+    <i:Interaction.Behaviors>
+        <behaviours:BorderlessWindowBehavior ResizeWithGrip="True" />
+    </i:Interaction.Behaviors>
+
+    <Grid>
+        <Grid Height="54" VerticalAlignment="Top" MouseDown="OnWindowTopMouseDown">
+            <Grid.Background>
+                <SolidColorBrush Color="White" />
+            </Grid.Background>
+            <LocalControls:WindowButtons HorizontalAlignment="Right" VerticalAlignment="Top" Panel.ZIndex="1" />
+        </Grid>
+
+        <Controls:MetroContentControl>
             <TabControl x:Name="Tabs">
-                <TabItem Header="Movie" DataContext="{Binding Path=MovieEncodeInfo}">
+                <TabItem Header="movie" DataContext="{Binding Path=MovieEncodeInfo}">
                     <Controls:MetroContentControl>
-                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="auto" />
@@ -75,29 +90,37 @@
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Grid.RowSpan="5" Source="/EncoderUI;component/Popcorn.jpg" 
+                            <Image Grid.RowSpan="5" Grid.ColumnSpan="4" Source="/EncoderUI;component/Popcorn.jpg" 
                                    HorizontalAlignment="Center" Stretch="UniformToFill" />
 
-                            <Button Click="OnFixSettingsClicked" Style="{StaticResource SettingsWarningBar}" />
+                            <Button Click="OnFixSettingsClicked" Grid.ColumnSpan="4" 
+                                    Style="{StaticResource SettingsWarningBar}" />
 
-                            <TextBox Grid.Row="1" Text="{Binding Path=MovieTitle}" Margin="10" TextAlignment="Center" 
-                                     FontSize="24" />
-                            <TextBlock Grid.Row="2" Style="{StaticResource entryLabel}" Text="Movie Title" />
+                            <TextBox Grid.Row="1" Grid.ColumnSpan="4" Text="{Binding Path=MovieTitle}" Margin="10" 
+                                     TextAlignment="Center" FontSize="24" />
+                            <TextBlock Grid.Row="2" Grid.ColumnSpan="4" Style="{StaticResource entryLabel}" 
+                                       Text="Movie Title" />
 
-                            <TextBox Grid.Row="3" Text="{Binding Path=MovieYear}" Margin="10" TextAlignment="Center" 
-                                     FontSize="24" />
-                            <TextBlock Grid.Row="4" Style="{StaticResource entryLabel}" Text="Movie Year" />
+                            <TextBox Grid.Row="3" Grid.ColumnSpan="4" Text="{Binding Path=MovieYear}" Margin="10" 
+                                     TextAlignment="Center" FontSize="24" />
+                            <TextBlock Grid.Row="4" Grid.ColumnSpan="4" Style="{StaticResource entryLabel}" 
+                                       Text="Movie Year" />
 
-                            <ProgressBar Grid.Row="5" Value="{Binding Path=PercentComplete}" />
-                            <TextBlock Grid.Row="6" HorizontalAlignment="Center" Text="{Binding Path=ETA}" />
+                            <ProgressBar Grid.Row="5" Grid.ColumnSpan="4" Value="{Binding Path=PercentComplete}" />
+                            <TextBlock Grid.Row="6" Grid.ColumnSpan="4" HorizontalAlignment="Center" 
+                                       Text="{Binding Path=ETA}" />
 
-                            <Button Grid.Row="7" Style="{StaticResource DownloadButton}" Click="OnStartButtonClicked" />                                
+                            <Button Grid.Row="7" Grid.Column="1" Style="{StaticResource DownloadButton}" Click="OnStartButtonClicked" />
+                            <Button Grid.Row="7" Grid.Column="2" Style="{StaticResource DownloadButton}" Click="OnStartButtonClicked" />
                         </Grid>
                     </Controls:MetroContentControl>
                 </TabItem>
-                <TabItem Header="TV Show" DataContext="{Binding Path=TVShowEncodeInfo}">
+                <TabItem Header="tv show" DataContext="{Binding Path=TVShowEncodeInfo}">
                     <Controls:MetroContentControl>
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Grid.RowDefinitions>
@@ -123,7 +146,7 @@
                             <TextBox Grid.Row="1" Text="{Binding Path=Series}" Margin="10" TextAlignment="Center" 
                                      FontSize="24" />
                             <TextBlock Grid.Row="2" Style="{StaticResource entryLabel}" Text="Series" />
-                            
+
                             <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Path=Season}" Margin="10" 
                                      TextAlignment="Center" FontSize="24" />
                             <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource entryLabel}" Text="Season" />
@@ -135,48 +158,50 @@
                         </Grid>
                     </Controls:MetroContentControl>
                 </TabItem>
-                <TabItem Header="Settings" x:Name="SettingsTab">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        
-                        <Image Grid.RowSpan="6" Grid.ColumnSpan="2" Source="/EncoderUI;component/HardDrive.jpg" 
-                                   HorizontalAlignment="Center"  Stretch="UniformToFill" />
+                <TabItem Header="settings" x:Name="SettingsTab">
+                    <Controls:MetroContentControl>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="1" Style="{StaticResource settingLabel}" Text="Source Drive" />
-                        <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                                  ItemsSource="{Binding Path=OpticalDrives}" SelectedItem="{Binding Path=SourceDrive}"
-                                  Margin="10" x:Name="SourceDriveBox" >
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <WrapPanel>
-                                        <TextBlock Text="{Binding RootDirectory}" />
-                                        <TextBlock Text="{Binding VolumeLabel}" Margin="10,0,0,0" />
-                                    </WrapPanel>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
+                            <Image Grid.RowSpan="6" Grid.ColumnSpan="2" Source="/EncoderUI;component/HardDrive.jpg" 
+                                       HorizontalAlignment="Center"  Stretch="UniformToFill" />
 
-                        <TextBlock Grid.Row="2" Style="{StaticResource settingLabel}" Text="Movie Output Path" />
-                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=MovieEncodeInfo.OutputPath}" 
-                                 VerticalAlignment="Center" Margin="10"/>
+                            <TextBlock Grid.Row="1" Style="{StaticResource settingLabel}" Text="Source Drive" />
+                            <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                                      ItemsSource="{Binding Path=OpticalDrives}" SelectedItem="{Binding Path=SourceDrive}"
+                                      Margin="10" x:Name="SourceDriveBox" >
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <WrapPanel>
+                                            <TextBlock Text="{Binding RootDirectory}" />
+                                            <TextBlock Text="{Binding VolumeLabel}" Margin="10,0,0,0" />
+                                        </WrapPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
 
-                        <TextBlock Grid.Row="3" Style="{StaticResource settingLabel}" Text="TV Show Output Path" />
-                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=TVShowEncodeInfo.OutputPath}" 
-                                 VerticalAlignment="Center" Margin="10"/>
-                    </Grid>
+                            <TextBlock Grid.Row="2" Style="{StaticResource settingLabel}" Text="Movie Output Path" />
+                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=MovieEncodeInfo.OutputPath}" 
+                                     VerticalAlignment="Center" Margin="10"/>
+
+                            <TextBlock Grid.Row="3" Style="{StaticResource settingLabel}" Text="TV Show Output Path" />
+                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=TVShowEncodeInfo.OutputPath}" 
+                                     VerticalAlignment="Center" Margin="10"/>
+                        </Grid>
+                    </Controls:MetroContentControl>
                 </TabItem>
             </TabControl>
-        </Grid>
-    </Controls:MetroContentControl>        
+        </Controls:MetroContentControl>
+    </Grid>
 </Window>

@@ -1,22 +1,19 @@
 ﻿namespace EncoderUI
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
-    using System.Management;
-    using System.Windows;
-    using HandBrake.ApplicationServices;
-    using HandBrake.ApplicationServices.Services;
-    using System.Threading.Tasks;
-    using System.Collections.Generic;
-    using System.Threading;
     using System.IO;
     using System.Linq;
+    using System.Runtime.InteropServices;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Input;
     using System.Windows.Interop;
     using EncoderUI.Interop;
-    using System.Runtime.InteropServices;
-    using System.Net;
-    using Newtonsoft.Json;
+    using HandBrake.ApplicationServices;
+    using HandBrake.ApplicationServices.Services;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -43,10 +40,11 @@
             InitializeComponent();
             SetupHandbrake();
             StartRefreshOpticalDrives();
-            RegisterDeviceChange();
 
             MovieEncodeInfo = new MovieEncodeInfo(this, this.encodeQueue);
             TVShowEncodeInfo = new TVShowEncodeInfo(this, this.encodeQueue);
+
+            SourceInitialized += OnSourceInitialized;
         }
 
         public MovieEncodeInfo MovieEncodeInfo
@@ -101,16 +99,23 @@
             // TODO: Focus appropriately
         }
 
-        void OnStartButtonClicked(object sender, RoutedEventArgs e)
+        void OnWindowTopMouseDown(object sender, MouseButtonEventArgs e)
         {
-            MovieEncodeInfo.Start();
+            if (e.RightButton != MouseButtonState.Pressed && e.MiddleButton != MouseButtonState.Pressed)
+                DragMove();
         }
 
-        void RegisterDeviceChange()
+        void OnSourceInitialized(object sender, EventArgs e)
         {
+            // Hook the window proc so that we can get the disc-change notifications.
             var interopHelper = new WindowInteropHelper(this);
             this.interopSource = HwndSource.FromHwnd(interopHelper.EnsureHandle());
             this.interopSource.AddHook(MessageHook);
+        }
+
+        void OnStartButtonClicked(object sender, RoutedEventArgs e)
+        {
+            MovieEncodeInfo.Start();
         }
 
         static void SetupHandbrake()

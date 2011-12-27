@@ -75,4 +75,56 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
 
+    <Style TargetType="TabItem">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="6,2,6,2" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="MinWidth" Value="5" />
+        <Setter Property="MinHeight" Value="5" />
+        <Setter Property="Background" Value="White" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabItem">
+                    <Grid x:Name="root" Margin="0,0,15,0">
+                        <Label x:Name="unselected" Margin="0" Content="{TemplateBinding Header}" FontSize="26.667" FontWeight="Light">
+                            <Label.Foreground>
+                                <SolidColorBrush Color="{DynamicResource Gray11}" />
+                            </Label.Foreground>
+                        </Label>
+                        <Label x:Name="selected" Margin="0" Content="{TemplateBinding Header}" FontSize="26.667" FontWeight="Light" Opacity="0">
+                            <Label.Foreground>
+                                <SolidColorBrush Color="{DynamicResource AccentColor}" />
+                            </Label.Foreground>
+                        </Label>
+                        <Label x:Name="hover" Margin="0" Content="{TemplateBinding Header}" FontSize="26.667" FontWeight="Light" Opacity="0">
+                            <Label.Foreground>
+                                <SolidColorBrush Color="{DynamicResource Gray3}" />
+                            </Label.Foreground>
+                        </Label>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter Property="Opacity" TargetName="selected" Value="1" />
+                            <Setter Property="Opacity" TargetName="unselected" Value="0" />
+                            <Setter Property="Opacity" TargetName="hover" Value="0" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="false">
+                            <Setter Property="Opacity" TargetName="unselected" Value="1" />
+                            <Setter Property="Opacity" TargetName="selected" Value="0" />
+                            <Setter Property="Opacity" TargetName="hover" Value="0" />
+                        </Trigger>
+                        <Trigger  SourceName="root" Property="IsMouseOver" Value="true">
+                            <Setter Property="Opacity" TargetName="unselected" Value="0" />
+                            <Setter Property="Opacity" TargetName="selected" Value="0" />
+                            <Setter Property="Opacity" TargetName="hover" Value="1" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>  
+    
 </ResourceDictionary>
