@@ -4,11 +4,11 @@
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.IO;
+    using System.Windows.Threading;
     using HandBrake.ApplicationServices;
     using HandBrake.ApplicationServices.Services;
-    using System.Windows;
 
-    public abstract class EncodeInfo : INotifyPropertyChanged
+    public abstract class EncodeInfo : DispatcherObject, INotifyPropertyChanged
     {
         // http://msdn.microsoft.com/en-us/library/windows/desktop/aa365247(v=vs.85).aspx
         static readonly char[] reservedCharacters = new char[] { '<', '>', ':', '"', '/', '\\', '|', '?', '*' };
@@ -32,7 +32,9 @@
 
             DependencyPropertyDescriptor descriptor;
             descriptor = DependencyPropertyDescriptor.FromProperty(MainWindow.SourceDriveProperty, typeof(MainWindow));
-            descriptor.AddValueChanged(this.mainWindow, (o, e) => OnSourceDriveChanged());            
+            descriptor.AddValueChanged(this.mainWindow, (o, e) => OnSourceDriveChanged());
+
+            CheckSettingErrors();
         }
 
         public string ETA
