@@ -90,41 +90,36 @@
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="auto" />
-                                <ColumnDefinition Width="auto" />
-                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Grid.RowSpan="5" Grid.ColumnSpan="4" Source="/EncoderUI;component/Popcorn.jpg" 
+                            <Image Grid.RowSpan="5" Source="/EncoderUI;component/Popcorn.jpg" 
                                    HorizontalAlignment="Center" Stretch="UniformToFill" />
 
                             <Button Click="OnFixSettingsClicked" Grid.ColumnSpan="4" 
                                     Style="{StaticResource SettingsWarningBar}" />
 
-                            <TextBox Grid.Row="1" Grid.ColumnSpan="4" Text="{Binding Path=MovieTitle}" Margin="10" 
+                            <TextBox Grid.Row="1" Text="{Binding Path=MovieTitle}" Margin="10" 
                                      TextAlignment="Center" FontSize="24" />
-                            <TextBlock Grid.Row="2" Grid.ColumnSpan="4" Style="{StaticResource entryLabel}" 
-                                       Text="Movie Title" />
+                            <TextBlock Grid.Row="2" Style="{StaticResource entryLabel}" Text="Movie Title" />
 
-                            <TextBox Grid.Row="3" Grid.ColumnSpan="4" Text="{Binding Path=MovieYear}" Margin="10" 
-                                     TextAlignment="Center" FontSize="24" />
-                            <TextBlock Grid.Row="4" Grid.ColumnSpan="4" Style="{StaticResource entryLabel}" 
-                                       Text="Movie Year" />
+                            <TextBox Grid.Row="3" Text="{Binding Path=MovieYear}" Margin="10" TextAlignment="Center" 
+                                     FontSize="24" />
+                            <TextBlock Grid.Row="4" Style="{StaticResource entryLabel}" Text="Movie Year" />
 
-                            <ProgressBar Grid.Row="5" Grid.ColumnSpan="4" Value="{Binding Path=PercentComplete}" />
-                            <TextBlock Grid.Row="6" Grid.ColumnSpan="4" HorizontalAlignment="Center" 
-                                       Text="{Binding Path=ETA}" />
+                            <ProgressBar Grid.Row="5" Value="{Binding Path=PercentComplete}" />
+                            <TextBlock Grid.Row="6" HorizontalAlignment="Center" Text="{Binding Path=ETA}" />
 
-                            <Button Grid.Row="7" Grid.Column="1" Style="{StaticResource DownloadButton}" Click="OnStartButtonClicked" />
-                            <Button Grid.Row="7" Grid.Column="2" Style="{StaticResource DownloadButton}" Click="OnStartButtonClicked" />
+                            <Button Grid.Row="7" Grid.Column="1" Style="{StaticResource DownloadButton}" 
+                                    Click="OnStartButtonClicked" ToolTip="Begin Copying" />
                         </Grid>
                     </Controls:MetroContentControl>
                 </TabItem>
                 <TabItem Header="tv show" DataContext="{Binding Path=TVShowEncodeInfo}">
                     <Controls:MetroContentControl>
-                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.IsSharedSizeScope="True">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*" />
+                                <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
@@ -134,10 +129,9 @@
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Grid.RowSpan="5" Grid.ColumnSpan="2" Source="/EncoderUI;component/Static.jpg" 
+                            <Image Grid.RowSpan="6" Grid.ColumnSpan="2" Source="/EncoderUI;component/Static.jpg" 
                                    HorizontalAlignment="Center"  Stretch="UniformToFill" />
 
                             <Button Click="OnFixSettingsClicked" Grid.ColumnSpan="2" 
@@ -147,14 +141,83 @@
                                      FontSize="24" />
                             <TextBlock Grid.Row="2" Style="{StaticResource entryLabel}" Text="Series" />
 
-                            <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Path=Season}" Margin="10" 
-                                     TextAlignment="Center" FontSize="24" />
-                            <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource entryLabel}" Text="Season" />
+                            <Grid Grid.Row="3" Background="Gray" TextBlock.FontSize="14" TextBlock.Foreground="White" 
+                                  HorizontalAlignment="Stretch" Margin="10,0,10,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto" SharedSizeGroup="Index" />
+                                    <ColumnDefinition Width="auto" SharedSizeGroup="Length" />
+                                    <ColumnDefinition Width="auto" SharedSizeGroup="Season" />
+                                    <ColumnDefinition Width="auto" SharedSizeGroup="Episode" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
 
-                            <ProgressBar Grid.Row="5" Grid.ColumnSpan="2" />
-                            <TextBlock Grid.Row="5" Grid.ColumnSpan="2" />
+                                <TextBlock Padding="5" Text="Index" />
+                                <TextBlock Padding="5" Grid.Column="1" Text="Length" />
+                                <TextBlock Padding="5" Grid.Column="2" Text="Season" />
+                                <TextBlock Padding="5" Grid.Column="3" Text="Episode" />
+                                <TextBlock Padding="5" Grid.Column="4" Text="Title" />
+                            </Grid>
+                            <ItemsControl Grid.Row="4" Height="150" Margin="10,0,10,0" 
+                                          ItemsSource="{Binding Episodes}" 
+                                          HorizontalContentAlignment="Stretch" x:Name="EpisodeList"  
+                                          KeyboardNavigation.TabNavigation="Continue"
+                                          KeyboardNavigation.DirectionalNavigation="Contained"                                     
+                                          Keyboard.PreviewKeyDown="OnEpisodeListKeyDown"
+                                          Background="White"
+                                          >
+                                <ItemsControl.Template>
+                                    <ControlTemplate>
+                                        <Border Background="{TemplateBinding Background}">
+                                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                                <ItemsPresenter />
+                                            </ScrollViewer>
+                                        </Border>
+                                    </ControlTemplate>
+                                </ItemsControl.Template>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel IsItemsHost="true" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid HorizontalAlignment="Stretch">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition SharedSizeGroup="Index" />
+                                                <ColumnDefinition SharedSizeGroup="Length" />
+                                                <ColumnDefinition SharedSizeGroup="Season" />
+                                                <ColumnDefinition SharedSizeGroup="Episode" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
 
-                            <Button Grid.Row="6" Grid.ColumnSpan="2" Style="{StaticResource DownloadButton}"  />
+                                            <TextBlock Text="{Binding Index}" VerticalAlignment="Center" Margin="3" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Length}" 
+                                                       VerticalAlignment="Center" Margin="3" 
+                                                       KeyboardNavigation.DirectionalNavigation="Continue"
+                                                       />
+                                            <TextBox Grid.Column="2" Text="{Binding Season}" 
+                                                     HorizontalAlignment="Stretch" 
+                                                     KeyboardNavigation.DirectionalNavigation="Continue"                                                     
+                                                     />
+                                            <TextBox Grid.Column="3" Text="{Binding Episode}" 
+                                                     HorizontalAlignment="Stretch" 
+                                                     KeyboardNavigation.DirectionalNavigation="Continue"
+                                                     />
+                                            <TextBox Grid.Column="4" Text="{Binding EpisodeTitle}" 
+                                                     HorizontalAlignment="Stretch"  
+                                                     KeyboardNavigation.DirectionalNavigation="Continue" 
+                                                     />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <TextBlock Grid.Row="5" Style="{StaticResource entryLabel}" Text="Episodes" />
+
+                            <ProgressBar Grid.Row="6" Grid.ColumnSpan="2" />
+                            <TextBlock Grid.Row="6" Grid.ColumnSpan="2" />
+
+                            <Button Grid.Row="7" Grid.ColumnSpan="2" Style="{StaticResource DownloadButton}"  />
                         </Grid>
                     </Controls:MetroContentControl>
                 </TabItem>

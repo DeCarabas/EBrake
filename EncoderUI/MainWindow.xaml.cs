@@ -14,6 +14,8 @@
     using EncoderUI.Interop;
     using HandBrake.ApplicationServices;
     using HandBrake.ApplicationServices.Services;
+    using System.Windows.Media;
+    using System.Windows.Controls;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -92,7 +94,51 @@
             }
             return IntPtr.Zero;
         }
-        
+
+        void OnEpisodeListKeyDown(object sender, KeyEventArgs e)
+        {            
+            UIElement elementWithFocus = Keyboard.FocusedElement as UIElement;
+            if (elementWithFocus != null)
+            {
+                FocusNavigationDirection? direction = null;
+                switch (e.Key)
+                {
+                    case Key.Up: direction = FocusNavigationDirection.Up; break;
+                    case Key.Down: direction = FocusNavigationDirection.Down; break;
+                    case Key.Right:
+                        {
+                            var textBox = elementWithFocus as TextBox;
+                            if (textBox != null)
+                            {
+                                if (textBox.CaretIndex == textBox.Text.Length)
+                                {
+                                    direction = FocusNavigationDirection.Right;
+                                }
+                            }
+                        }
+                        break;
+                    case Key.Left:
+                        {
+                            var textBox = elementWithFocus as TextBox;
+                            if (textBox != null)
+                            {
+                                if (textBox.CaretIndex == 0)
+                                {
+                                    direction = FocusNavigationDirection.Left;
+                                }
+                            }
+                        }
+                        break;
+                }
+
+                if (direction != null)
+                {
+                    elementWithFocus.MoveFocus(new TraversalRequest(direction.Value));
+                    e.Handled = true;
+                }
+            }
+        }
+
         void OnFixSettingsClicked(object sender, RoutedEventArgs e)
         {
             Tabs.SelectedItem = SettingsTab;

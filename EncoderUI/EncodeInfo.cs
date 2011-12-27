@@ -32,7 +32,7 @@
 
             DependencyPropertyDescriptor descriptor;
             descriptor = DependencyPropertyDescriptor.FromProperty(MainWindow.SourceDriveProperty, typeof(MainWindow));
-            descriptor.AddValueChanged(this.mainWindow, (o, e) => CheckSettingErrors());            
+            descriptor.AddValueChanged(this.mainWindow, (o, e) => OnSourceDriveChanged());            
         }
 
         public string ETA
@@ -119,6 +119,11 @@
         protected void Notify(string property)
         {
             if (PropertyChanged != null) { PropertyChanged(this, new PropertyChangedEventArgs(property)); }
+        }
+
+        protected virtual void OnSourceDriveChanged()
+        {
+            CheckSettingErrors();
         }
 
         void OnEncodeEnded(object sender, EventArgs e)

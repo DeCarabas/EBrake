@@ -69,6 +69,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\WindowButtons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Styles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -84,6 +88,11 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Controls\ClosingWindowEventHandler.cs" />
+    <Compile Include="Controls\ClosingWindowEventArgs.cs" />
+    <Compile Include="Controls\WindowButtons.xaml.cs">
+      <DependentUpon>WindowButtons.xaml</DependentUpon>
     </Compile>
     <Compile Include="TVShowEncodeInfo.cs" />
     <Compile Include="SettingError.cs" />

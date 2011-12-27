@@ -38,5 +38,10 @@
 
             encodingQueue.Add(commandLine, 0, SourceDrive.RootDirectory.FullName, outputFile, true);
         }
+
+        protected override void OnSourceDriveChanged()
+        {
+            base.OnSourceDriveChanged();
+        }
     }
 }

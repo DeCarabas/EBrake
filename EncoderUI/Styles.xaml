@@ -58,7 +58,7 @@
                 <DropShadowEffect ShadowDepth="0" Color="Black" BlurRadius="15" />
             </Setter.Value>
         </Setter>
-        <Setter Property="Margin" Value="0,0,0,40" />
+        <Setter Property="Margin" Value="0,0,0,30" />
     </Style>
     <Style TargetType="TextBlock" x:Key="settingLabel" BasedOn="{StaticResource entryLabel}">
         <Setter Property="VerticalAlignment" Value="Center" />
