@@ -34,28 +34,38 @@
             <Setter Property="ContentTemplate">
                 <Setter.Value>
                     <DataTemplate>
-                        <Rectangle Width="20" Height="20">
-                            <Rectangle.Fill>
-                                <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_download_disabled}" />
-                            </Rectangle.Fill>
-                        </Rectangle>
+                        <Rectangle Name="ButtonIcon" Width="20" Height="20" 
+                                   Fill="{StaticResource appbar_download_disabled}" />
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding SettingError}" Value="OK">
+                                <Setter TargetName="ButtonIcon" Property="Fill" 
+                                        Value="{StaticResource appbar_download}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsEncoding}" Value="True">
+                                <Setter TargetName="ButtonIcon" Property="Fill" 
+                                        Value="{StaticResource appbar_download_disabled}" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding SettingError}" Value="OK">
-                    <Setter Property="Button.IsEnabled"  Value="true" />
-                    <Setter Property="ContentTemplate">
-                        <Setter.Value>
-                            <DataTemplate>
-                                <Rectangle Width="20" Height="20">
-                                    <Rectangle.Fill>
-                                        <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_download}" />
-                                    </Rectangle.Fill>
-                                </Rectangle>
-                            </DataTemplate>
-                        </Setter.Value>
-                    </Setter>
+                    <Setter Property="IsEnabled"  Value="true" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsEncoding}" Value="True">
+                    <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    
+        <Style TargetType="Grid" x:Key="VisibleWhenScanning">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsScanning}" Value="True">
+                    <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsScanning}" Value="False">
+                    <Setter Property="Visibility" Value="Hidden" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -95,22 +105,21 @@
                             <Image Grid.RowSpan="5" Source="/EncoderUI;component/Popcorn.jpg" 
                                    HorizontalAlignment="Center" Stretch="UniformToFill" />
 
-                            <Button Click="OnFixSettingsClicked" Grid.ColumnSpan="4" 
-                                    Style="{StaticResource SettingsWarningBar}" />
+                            <Button Click="OnFixSettingsClicked" Style="{StaticResource SettingsWarningBar}" />
 
                             <TextBox Grid.Row="1" Text="{Binding Path=MovieTitle}" Margin="10" 
-                                     TextAlignment="Center" FontSize="24" />
+                                     TextAlignment="Center" FontSize="24" Opacity="0.9" />
                             <TextBlock Grid.Row="2" Style="{StaticResource entryLabel}" Text="Movie Title" />
 
                             <TextBox Grid.Row="3" Text="{Binding Path=MovieYear}" Margin="10" TextAlignment="Center" 
-                                     FontSize="24" />
+                                     FontSize="24" Opacity="0.9" />
                             <TextBlock Grid.Row="4" Style="{StaticResource entryLabel}" Text="Movie Year" />
 
                             <ProgressBar Grid.Row="5" Value="{Binding Path=PercentComplete}" />
                             <TextBlock Grid.Row="6" HorizontalAlignment="Center" Text="{Binding Path=ETA}" />
 
                             <Button Grid.Row="7" Grid.Column="1" Style="{StaticResource DownloadButton}" 
-                                    Click="OnStartButtonClicked" ToolTip="Begin Copying" />
+                                    Click="OnMovieStartButtonClicked" ToolTip="Begin Copying" />
                         </Grid>
                     </Controls:MetroContentControl>
                 </TabItem>
@@ -126,23 +135,24 @@
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Grid.RowSpan="6" Grid.ColumnSpan="2" Source="/EncoderUI;component/Static.jpg" 
+                            <Image Grid.RowSpan="6" Source="/EncoderUI;component/Static.jpg" 
                                    HorizontalAlignment="Center"  Stretch="UniformToFill" />
 
-                            <Button Click="OnFixSettingsClicked" Grid.ColumnSpan="2" 
-                                    Style="{StaticResource SettingsWarningBar}" />
+                            <Button Click="OnFixSettingsClicked" Style="{StaticResource SettingsWarningBar}" />
 
                             <TextBox Grid.Row="1" Text="{Binding Path=Series}" Margin="10" TextAlignment="Center" 
-                                     FontSize="24" />
+                                     FontSize="24" Opacity="0.9" />
                             <TextBlock Grid.Row="2" Style="{StaticResource entryLabel}" Text="Series" />
 
                             <Grid Grid.Row="3" Background="Gray" TextBlock.FontSize="14" TextBlock.Foreground="White" 
-                                  HorizontalAlignment="Stretch" Margin="10,0,10,0">
+                                  HorizontalAlignment="Stretch" Margin="10,0,10,0" Opacity="0.9" Focusable="False" >
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto" SharedSizeGroup="Index" />
                                     <ColumnDefinition Width="auto" SharedSizeGroup="Length" />
@@ -164,6 +174,8 @@
                                           KeyboardNavigation.DirectionalNavigation="Contained"                                     
                                           Keyboard.PreviewKeyDown="OnEpisodeListKeyDown"
                                           Background="White"
+                                          Opacity="0.9"
+                                          Focusable="False"
                                           >
                                 <ItemsControl.Template>
                                     <ControlTemplate>
@@ -212,12 +224,34 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
 
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="4"  
+                                  Style="{StaticResource VisibleWhenScanning}">
+                                <Rectangle VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
+                                           Fill="{StaticResource DisabledControlBrush}" Opacity="0.5"
+                                           Margin="10,0,10,0"/>
+                                <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                                    <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                        <TextBlock Text="Scanning Disc..." TextAlignment="Center" FontSize="14" 
+                                                   Foreground="White">
+                                            <TextBlock.Effect>
+                                                <DropShadowEffect ShadowDepth="0" BlurRadius="10" />
+                                            </TextBlock.Effect>
+                                        </TextBlock>
+                                        <ProgressBar VerticalAlignment="Center" HorizontalAlignment="Stretch" 
+                                                    Margin="20" IsIndeterminate="True" />
+                                        <ContentPresenter />
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                            
                             <TextBlock Grid.Row="5" Style="{StaticResource entryLabel}" Text="Episodes" />
 
-                            <ProgressBar Grid.Row="6" Grid.ColumnSpan="2" />
-                            <TextBlock Grid.Row="6" Grid.ColumnSpan="2" />
+                            <ProgressBar Grid.Row="6" Value="{Binding TotalPercentComplete}" />
+                            <ProgressBar Grid.Row="7" Value="{Binding PercentComplete}" />
+                            <TextBlock Grid.Row="8" Text="{Binding ETA}" />
 
-                            <Button Grid.Row="7" Grid.ColumnSpan="2" Style="{StaticResource DownloadButton}"  />
+                            <Button Grid.Row="9" Style="{StaticResource DownloadButton}" 
+                                    Click="OnTVStartButtonClicked" />
                         </Grid>
                     </Controls:MetroContentControl>
                 </TabItem>

@@ -7,6 +7,7 @@
     using System.Windows.Threading;
     using HandBrake.ApplicationServices;
     using HandBrake.ApplicationServices.Services;
+    using HandBrake.ApplicationServices.Model;
 
     public abstract class EncodeInfo : DispatcherObject, INotifyPropertyChanged
     {
@@ -14,12 +15,15 @@
         static readonly char[] reservedCharacters = new char[] { '<', '>', ':', '"', '/', '\\', '|', '?', '*' };
 
         readonly Queue encodingQueue;
+        int encodeIndex;
         string eta;
         bool isEncoding;
+        readonly List<Job> jobQueue = new List<Job>();
         readonly MainWindow mainWindow;
         string outputPath;
         float percentComplete;
         SettingError settingError;
+        double totalPercentComplete;
 
         protected EncodeInfo(MainWindow mainWindow, Queue encodingQueue)
         {
@@ -57,9 +61,9 @@
         public string OutputPath
         {
             get { return this.outputPath; }
-            set 
-            { 
-                this.outputPath = value; 
+            set
+            {
+                this.outputPath = value;
                 Notify("OutputPath");
                 CheckSettingErrors();
             }
@@ -74,11 +78,11 @@
         public SettingError SettingError
         {
             get { return this.settingError; }
-            set 
+            set
             {
                 if (this.settingError != value)
                 {
-                    this.settingError = value; 
+                    this.settingError = value;
                     Notify("SettingError");
                 }
             }
@@ -89,10 +93,16 @@
             get { return this.mainWindow.SourceDrive; }
         }
 
+        public double TotalPercentComplete
+        {
+            get { return this.totalPercentComplete; }
+            set { this.totalPercentComplete = value; Notify("TotalPercentComplete"); }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected abstract void AddEncodingJobs(Queue encodingQueue);
-        
+        protected abstract void AddEncodingJobs(List<Job> encodingQueue);
+
         void CheckSettingErrors()
         {
             if (SourceDrive == null)
@@ -130,31 +140,71 @@
 
         void OnEncodeEnded(object sender, EventArgs e)
         {
-            IsEncoding = false;
-            ETA = "Complete";
-            PercentComplete = 1;
+            Dispatcher.BeginInvoke(() =>
+                {
+                    this.encodeIndex++;
+                    if (this.encodeIndex < this.jobQueue.Count)
+                    {
+                        this.encodingQueue.Add(
+                            this.jobQueue[this.encodeIndex].Query,
+                            this.jobQueue[this.encodeIndex].Title,
+                            this.jobQueue[this.encodeIndex].Source,
+                            this.jobQueue[this.encodeIndex].Destination,
+                            this.jobQueue[this.encodeIndex].CustomQuery);
+                        this.encodingQueue.Start();
+
+                        TotalPercentComplete = Math.Round(
+                            ((double)this.encodeIndex / (double)this.jobQueue.Count) * 100.0);
+                    }
+                    else
+                    {
+                        IsEncoding = this.encodingQueue.IsEncoding;
+                        ETA = "Complete";
+                        PercentComplete = 100;
+                        TotalPercentComplete = 100;
+                    }
+                });
         }
 
         void OnEncodeStarted(object sender, EventArgs e)
         {
-            IsEncoding = true;
-            ETA = "Starting...";
-            PercentComplete = 0;
+            Dispatcher.BeginInvoke(() =>
+                {
+                    IsEncoding = this.encodingQueue.IsEncoding;
+                    ETA = "Starting...";
+                    PercentComplete = 0;
+                });
         }
 
         void OnEncodeStatusChanged(object sender, EncodeProgressEventArgs e)
         {
-            if (IsEncoding)
-            {
-                PercentComplete = e.PercentComplete;
-                ETA = String.Format("{0}% Complete. ETA: {1}", Math.Round(e.PercentComplete * 100), e.EstimatedTimeLeft);
-            }
+            Dispatcher.BeginInvoke(() =>
+                {
+                    if (this.encodingQueue.IsEncoding)
+                    {
+                        PercentComplete = e.PercentComplete;
+                        ETA = String.Format(
+                            "{0}% Complete. ETA: {1}", Math.Round(e.PercentComplete), e.EstimatedTimeLeft);
+                    }
+                });
         }
 
         public void Start()
         {
-            AddEncodingJobs(this.encodingQueue);
-            if (this.encodingQueue.Count > 0) { this.encodingQueue.Start(); }
+            this.jobQueue.Clear();
+            this.encodeIndex = 0;
+
+            AddEncodingJobs(this.jobQueue);
+            if (this.jobQueue.Count > 0)
+            {
+                this.encodingQueue.Add(
+                    this.jobQueue[0].Query,
+                    this.jobQueue[0].Title,
+                    this.jobQueue[0].Source,
+                    this.jobQueue[0].Destination,
+                    this.jobQueue[0].CustomQuery);
+                this.encodingQueue.Start();
+            }
         }
     }
 }

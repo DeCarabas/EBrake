@@ -145,10 +145,9 @@
             // TODO: Focus appropriately
         }
 
-        void OnWindowTopMouseDown(object sender, MouseButtonEventArgs e)
+        void OnMovieStartButtonClicked(object sender, RoutedEventArgs e)
         {
-            if (e.RightButton != MouseButtonState.Pressed && e.MiddleButton != MouseButtonState.Pressed)
-                DragMove();
+            MovieEncodeInfo.Start();
         }
 
         void OnSourceInitialized(object sender, EventArgs e)
@@ -159,9 +158,15 @@
             this.interopSource.AddHook(MessageHook);
         }
 
-        void OnStartButtonClicked(object sender, RoutedEventArgs e)
+        void OnTVStartButtonClicked(object sender, RoutedEventArgs e)
         {
-            MovieEncodeInfo.Start();
+            TVShowEncodeInfo.Start();
+        }
+
+        void OnWindowTopMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.RightButton != MouseButtonState.Pressed && e.MiddleButton != MouseButtonState.Pressed)
+                DragMove();
         }
 
         static void SetupHandbrake()

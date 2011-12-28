@@ -30,11 +30,7 @@
                                  Stroke="{TemplateBinding Foreground}"
                                  StrokeThickness="2"
                                  VerticalAlignment="Stretch" />
-                            <Rectangle Width="10" Height="10">
-                                <Rectangle.Fill>
-                                    <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_arrow_right}" />
-                                </Rectangle.Fill>
-                            </Rectangle>
+                            <Rectangle Width="10" Height="10" Fill="{StaticResource appbar_arrow_right}" />
                         </Grid>
 
                         <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"

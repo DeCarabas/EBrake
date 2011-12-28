@@ -7,6 +7,7 @@
     using System.ComponentModel;
     using System.IO;
     using System.Windows.Threading;
+    using HandBrake.ApplicationServices.Model;
     using HandBrake.ApplicationServices.Parsing;
     using HandBrake.ApplicationServices.Services;
 
@@ -44,9 +45,57 @@
             set { this.series = value; Notify("Series"); }
         }
 
-        protected override void AddEncodingJobs(Queue encodingQueue)
+        protected override void AddEncodingJobs(List<Job> encodingQueue)
         {
-            throw new NotImplementedException();
+            string source = Path.Combine(SourceDrive.RootDirectory.FullName, "VIDEO_TS");
+            string targetBase = Path.Combine(OutputPath, EscapeFileName(Series));
+            foreach (TitleEncodeInfo titleInfo in this.episodes)
+            {
+                if (String.IsNullOrWhiteSpace(titleInfo.Season) || String.IsNullOrWhiteSpace(titleInfo.Episode))
+                {
+                    continue;
+                }
+
+                string seasonString = GetDigitString(titleInfo.Season);
+                string episodeString = GetDigitString(titleInfo.Episode);
+
+                string outputFileName = String.Format("{0} S{1}E{2}", Series, seasonString, episodeString);
+                if (!String.IsNullOrWhiteSpace(titleInfo.EpisodeTitle))
+                {
+                    outputFileName += " " + titleInfo.EpisodeTitle;
+                }
+                outputFileName += ".m4v";
+
+                string outputDirectory = Path.Combine(
+                    targetBase, 
+                    String.Format("Season {0}", EscapeFileName(titleInfo.Season)));
+                if (!Directory.Exists(outputDirectory)) { Directory.CreateDirectory(outputDirectory); }
+
+                string outputFile = Path.Combine(outputDirectory, EscapeFileName(outputFileName));                
+
+                string commandLine = String.Format(
+                    "-t {0} -o \"{1}\" -i \"{2}\" -m -e x264 --native-language eng --decomb --strict-anamorphic -q 20",
+                    titleInfo.TitleNumber,
+                    outputFile,
+                    source);
+
+                encodingQueue.Add(new Job 
+                {
+                    Query = commandLine, 
+                    Title = titleInfo.TitleNumber, 
+                    Source = source, 
+                    Destination = outputFile, 
+                    CustomQuery = true
+                });
+            }
+        }
+
+        static string GetDigitString(string value)
+        {
+            string result = value;
+            int i;
+            if (int.TryParse(value, out i)) { result = string.Format("{0:00}", i); }
+            return result;
         }
 
         void OnEpisodesChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -72,6 +121,7 @@
         {
             Dispatcher.BeginInvoke(() =>
             {
+                this.IsScanning = this.scanService.IsScanning;
                 this.episodes.Clear();
 
                 DVD dvd = this.scanService.SouceData;
@@ -93,19 +143,24 @@
 
         void OnScanStarted(object sender, EventArgs e)
         {
-
+            Dispatcher.BeginInvoke(() =>
+            {
+                this.IsScanning = this.scanService.IsScanning;
+            });
         }
 
         void OnScanStatusChanged(object sender, EventArgs e)
         {
-
+            Dispatcher.BeginInvoke(() =>
+            {
+                this.IsScanning = this.scanService.IsScanning;
+            });
         }
 
         protected override void OnSourceDriveChanged()
         {
             base.OnSourceDriveChanged();
-            
-            Series = String.Empty;
+
             this.episodes.Clear();
             ScanDisc();
         }
@@ -154,8 +209,8 @@
         public void ScanDisc()
         {
             VerifyAccess();
-            if (scanService.IsScanning) { scanService.Stop(); }
-            if (SourceDrive != null && SourceDrive.IsReady) 
+            if (this.scanService.IsScanning) { scanService.Stop(); }
+            if (SourceDrive != null && SourceDrive.IsReady)
             {
                 scanService.Scan(Path.Combine(SourceDrive.RootDirectory.FullName, "VIDEO_TS"), 0);
             }

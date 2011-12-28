@@ -1,7 +1,9 @@
 ﻿namespace EncoderUI
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using HandBrake.ApplicationServices.Model;
     using HandBrake.ApplicationServices.Services;
 
     public sealed class MovieEncodeInfo : EncodeInfo
@@ -26,7 +28,7 @@
             set { this.movieYear = value; Notify("MovieYear"); }
         }
 
-        protected override void AddEncodingJobs(Queue encodingQueue)
+        protected override void AddEncodingJobs(List<Job> encodingQueue)
         {
             string outputFileName = EscapeFileName(String.Format("{0} ({1}).m4v", MovieTitle, MovieYear));
             string outputFile = Path.Combine(OutputPath, outputFileName);
@@ -36,7 +38,14 @@
                 outputFile,
                 Path.Combine(SourceDrive.RootDirectory.FullName, "VIDEO_TS"));
 
-            encodingQueue.Add(commandLine, 0, SourceDrive.RootDirectory.FullName, outputFile, true);
+            encodingQueue.Add(new Job
+            {
+                Query = commandLine, 
+                Title = 0, 
+                Source = SourceDrive.RootDirectory.FullName, 
+                Destination = outputFile, 
+                CustomQuery = true
+            });
         }
 
         protected override void OnSourceDriveChanged()

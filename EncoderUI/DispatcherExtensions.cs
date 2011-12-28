@@ -12,5 +12,10 @@
         {
             return dispatcher.BeginInvoke(a, null);
         }
+
+        public static void Invoke(this Dispatcher dispatcher, Action a)
+        {
+            dispatcher.Invoke(a, null);
+        }    
     }
 }
