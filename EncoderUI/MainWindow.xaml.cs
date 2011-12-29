@@ -146,7 +146,13 @@ using System.ComponentModel;
         {
             if (e.PropertyName == "IsEncoding")
             {
-                Tabs.IsEnabled = !((EncodeInfo)sender).IsEncoding;
+                foreach (TabItem tabItem in Tabs.Items)
+                {
+                    if (tabItem != Tabs.SelectedItem)
+                    {
+                        tabItem.IsEnabled = false;
+                    }
+                }                
             }
         }
 
