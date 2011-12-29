@@ -258,7 +258,7 @@
 
                             <ProgressBar Grid.Row="6" Value="{Binding TotalPercentComplete}" />
                             <ProgressBar Grid.Row="7" Value="{Binding PercentComplete}" />
-                            <TextBlock Grid.Row="8" Text="{Binding ETA}" />
+                            <TextBlock Grid.Row="8" Text="{Binding ETA}" HorizontalAlignment="Center" />
 
                             <Button Grid.Row="9" Style="{StaticResource DownloadButton}" 
                                     Click="OnTVEncodeButtonClicked" />                            
