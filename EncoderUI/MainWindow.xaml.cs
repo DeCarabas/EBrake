@@ -126,13 +126,27 @@ using System.ComponentModel;
         void OnClosingWindow(object sender, ClosingWindowEventArgs e)
         {
             SaveSettings();
+            if (MovieEncodeInfo.IsEncoding) { MovieEncodeInfo.Stop(); }
+            if (TVShowEncodeInfo.IsEncoding) { TVShowEncodeInfo.Stop(); }
+        }
+
+        void OnEncodeButtonClicked(EncodeInfo encodeInfo)
+        {
+            if (encodeInfo.IsEncoding)
+            {
+                encodeInfo.Stop();
+            }
+            else
+            {
+                encodeInfo.Start();
+            }
         }
 
         void OnEncodeInfoPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "IsEncoding")
             {
-                Tabs.IsEnabled = ((EncodeInfo)sender).IsEncoding;
+                Tabs.IsEnabled = !((EncodeInfo)sender).IsEncoding;
             }
         }
 
@@ -186,9 +200,9 @@ using System.ComponentModel;
             // TODO: Focus appropriately
         }
 
-        void OnMovieStartButtonClicked(object sender, RoutedEventArgs e)
+        void OnMovieEncodeButtonClicked(object sender, RoutedEventArgs e)
         {
-            MovieEncodeInfo.Start();
+            OnEncodeButtonClicked(MovieEncodeInfo);
         }
 
         void OnPreviewShowClicked(object sender, RoutedEventArgs e)
@@ -217,9 +231,9 @@ using System.ComponentModel;
             }
         }
 
-        void OnTVStartButtonClicked(object sender, RoutedEventArgs e)
+        void OnTVEncodeButtonClicked(object sender, RoutedEventArgs e)
         {
-            TVShowEncodeInfo.Start();
+            OnEncodeButtonClicked(TVShowEncodeInfo);
         }
 
         void OnWindowTopMouseDown(object sender, MouseButtonEventArgs e)

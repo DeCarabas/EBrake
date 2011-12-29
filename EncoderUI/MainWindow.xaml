@@ -30,31 +30,35 @@
             <Setter Property="Margin" Value="5" />
             <Setter Property="Width" Value="55" />
             <Setter Property="Height" Value="55" />
-            <Setter Property="IsEnabled"  Value="false" />
+            <Setter Property="IsEnabled" Value="false" />
+            <Setter Property="ToolTip" Value="Start Encoding" />
             <Setter Property="ContentTemplate">
                 <Setter.Value>
                     <DataTemplate>
-                        <Rectangle Name="ButtonIcon" Width="20" Height="20" 
-                                   Fill="{StaticResource appbar_download_disabled}" />
-                        <DataTemplate.Triggers>
-                            <DataTrigger Binding="{Binding SettingError}" Value="OK">
-                                <Setter TargetName="ButtonIcon" Property="Fill" 
-                                        Value="{StaticResource appbar_download}" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding IsEncoding}" Value="True">
-                                <Setter TargetName="ButtonIcon" Property="Fill" 
-                                        Value="{StaticResource appbar_download_disabled}" />
-                            </DataTrigger>
-                        </DataTemplate.Triggers>
+                        <Rectangle Width="20" Height="20" Fill="{StaticResource appbar_download_disabled}" />
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding SettingError}" Value="OK">
-                    <Setter Property="IsEnabled"  Value="true" />
+                    <Setter Property="IsEnabled" Value="true" />
+                    <Setter Property="ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <Rectangle Width="20" Height="20" Fill="{StaticResource appbar_download}" />
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsEncoding}" Value="True">
-                    <Setter Property="IsEnabled" Value="False" />
+                    <Setter Property="ToolTip" Value="Cancel Encoding" />
+                    <Setter Property="ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <Rectangle Width="20" Height="20" Fill="{StaticResource appbar_close}" />
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>                    
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -120,7 +124,7 @@
                             <TextBlock Grid.Row="6" HorizontalAlignment="Center" Text="{Binding Path=ETA}" />
 
                             <Button Grid.Row="7" Grid.Column="1" Style="{StaticResource DownloadButton}" 
-                                    Click="OnMovieStartButtonClicked" ToolTip="Begin Copying" />
+                                    Click="OnMovieEncodeButtonClicked" />
                         </Grid>
                     </Controls:MetroContentControl>
                 </TabItem>
@@ -257,7 +261,7 @@
                             <TextBlock Grid.Row="8" Text="{Binding ETA}" />
 
                             <Button Grid.Row="9" Style="{StaticResource DownloadButton}" 
-                                    Click="OnTVStartButtonClicked" />                            
+                                    Click="OnTVEncodeButtonClicked" />                            
                         </Grid>
                     </Controls:MetroContentControl>
                 </TabItem>

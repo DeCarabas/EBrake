@@ -206,5 +206,17 @@
                 this.encodingQueue.Start();
             }
         }
+
+        public void Stop()
+        {
+            this.encodeIndex = 0;
+            this.jobQueue.Clear();
+
+            // Can't do this; WPF isn't processing messages correctly or something.
+            // "SendKeys cannot run inside this application because the application is not handling Windows messages."
+            // this.encodingQueue.SafelyClose();
+            //
+            this.encodingQueue.Stop();
+        }
     }
 }
