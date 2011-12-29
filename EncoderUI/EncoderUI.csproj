@@ -28,7 +28,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>http://friendlyhedgehog.com/EncoderUI/</InstallUrl>
-    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationRevision>1</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -193,7 +193,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <HandbrakeFiles Include="$(HandbrakePath)\*" />
   </ItemGroup>
   <ItemGroup>
     <PublishFile Include="..\Handbrake\AxInterop.QTOControlLib.dll">
@@ -365,6 +364,9 @@
   -->
   <Target Name="AfterBuild">
     <!-- Copy for intermediate runnings. -->
+    <ItemGroup>
+      <HandbrakeFiles Include="$(HandbrakePath)\*" />
+    </ItemGroup>
     <Copy SourceFiles="@(HandbrakeFiles)" DestinationFolder="$(outdir)" OverwriteReadOnlyFiles="true" SkipUnchangedFiles="true" />
   </Target>
 </Project>

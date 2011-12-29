@@ -9,13 +9,14 @@
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
     using System.Windows;
+    using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Interop;
+    using EncoderUI.Controls;
     using EncoderUI.Interop;
     using HandBrake.ApplicationServices;
     using HandBrake.ApplicationServices.Services;
-    using System.Windows.Media;
-    using System.Windows.Controls;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -46,7 +47,11 @@
             MovieEncodeInfo = new MovieEncodeInfo(this, this.encodeQueue);
             TVShowEncodeInfo = new TVShowEncodeInfo(this, this.encodeQueue);
 
+            Tabs.SelectionChanged += OnTabChanged;
+
             SourceInitialized += OnSourceInitialized;
+
+            LoadSettings();
         }
 
         public MovieEncodeInfo MovieEncodeInfo
@@ -67,6 +72,25 @@
         {
             get { return (TVShowEncodeInfo)GetValue(TVShowEncodeInfoProperty); }
             set { SetValue(TVShowEncodeInfoProperty, value); }
+        }
+
+        void LoadSettings()
+        {
+            try
+            {
+                string rootPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                string fileName = Path.Combine(rootPath, "EncoderUI", "settings.json");
+                if (File.Exists(fileName))
+                {
+                    var settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(fileName));
+                    MovieEncodeInfo.OutputPath = settings.MovieOutputPath;
+                    TVShowEncodeInfo.OutputPath = settings.TVShowOutputPath;
+                }
+            }
+            catch
+            {
+                // Oh well! Best effort.
+            }
         }
 
         IntPtr MessageHook(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
@@ -95,8 +119,13 @@
             return IntPtr.Zero;
         }
 
+        void OnClosingWindow(object sender, ClosingWindowEventArgs e)
+        {
+            SaveSettings();
+        }
+
         void OnEpisodeListKeyDown(object sender, KeyEventArgs e)
-        {            
+        {
             UIElement elementWithFocus = Keyboard.FocusedElement as UIElement;
             if (elementWithFocus != null)
             {
@@ -150,12 +179,30 @@
             MovieEncodeInfo.Start();
         }
 
+        void OnPreviewShowClicked(object sender, RoutedEventArgs e)
+        {
+            var source = e.OriginalSource as FrameworkElement;
+            if (source != null)
+            {
+                var encodeInfo = (TitleEncodeInfo)source.DataContext;
+                // vlc dvd://device@title
+            }
+        }
+
         void OnSourceInitialized(object sender, EventArgs e)
         {
             // Hook the window proc so that we can get the disc-change notifications.
             var interopHelper = new WindowInteropHelper(this);
             this.interopSource = HwndSource.FromHwnd(interopHelper.EnsureHandle());
             this.interopSource.AddHook(MessageHook);
+        }
+
+        void OnTabChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.RemovedItems.Contains(SettingsTab))
+            {
+                SaveSettings();
+            }
         }
 
         void OnTVStartButtonClicked(object sender, RoutedEventArgs e)
@@ -167,6 +214,29 @@
         {
             if (e.RightButton != MouseButtonState.Pressed && e.MiddleButton != MouseButtonState.Pressed)
                 DragMove();
+        }
+
+        void SaveSettings()
+        {
+            try
+            {
+                var settings = new Settings
+                {
+                    MovieOutputPath = MovieEncodeInfo.OutputPath,
+                    TVShowOutputPath = TVShowEncodeInfo.OutputPath
+                };
+
+                string rootPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                string settingsPath = Path.Combine(rootPath, "EncoderUI");
+                if (!Directory.Exists(settingsPath)) { Directory.CreateDirectory(settingsPath); }
+
+                string fileName = Path.Combine(settingsPath, "settings.json");
+                File.WriteAllText(fileName, JsonConvert.SerializeObject(settings));
+            }
+            catch
+            {
+                // Oh well! Best effort.
+            }
         }
 
         static void SetupHandbrake()
@@ -212,6 +282,12 @@
                     SourceDrive = this.opticalDrives.FirstOrDefault(drv => drv.IsReady) ?? this.opticalDrives[0];
                 }
             }, this.wpfScheduler);
+        }
+
+        class Settings
+        {
+            public string MovieOutputPath { get; set; }
+            public string TVShowOutputPath { get; set; }
         }
     }
 }

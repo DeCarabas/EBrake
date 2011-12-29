@@ -80,7 +80,8 @@
             <Grid.Background>
                 <SolidColorBrush Color="White" />
             </Grid.Background>
-            <LocalControls:WindowButtons HorizontalAlignment="Right" VerticalAlignment="Top" Panel.ZIndex="1" />
+            <LocalControls:WindowButtons HorizontalAlignment="Right" VerticalAlignment="Top" Panel.ZIndex="1" 
+                                         ClosingWindow="OnClosingWindow" />
         </Grid>
 
         <Controls:MetroContentControl>
@@ -137,6 +138,7 @@
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -159,6 +161,7 @@
                                     <ColumnDefinition Width="auto" SharedSizeGroup="Season" />
                                     <ColumnDefinition Width="auto" SharedSizeGroup="Episode" />
                                     <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="auto" SharedSizeGroup="Preview" />
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Padding="5" Text="Index" />
@@ -200,6 +203,7 @@
                                                 <ColumnDefinition SharedSizeGroup="Season" />
                                                 <ColumnDefinition SharedSizeGroup="Episode" />
                                                 <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="auto" SharedSizeGroup="Preview" />
                                             </Grid.ColumnDefinitions>
 
                                             <TextBlock Text="{Binding Index}" VerticalAlignment="Center" Margin="3" />
@@ -219,6 +223,8 @@
                                                      HorizontalAlignment="Stretch"  
                                                      KeyboardNavigation.DirectionalNavigation="Continue" 
                                                      />
+                                            
+                                            <Button Grid.Column="5" Content="Preview" Click="OnPreviewShowClicked" />
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -251,7 +257,7 @@
                             <TextBlock Grid.Row="8" Text="{Binding ETA}" />
 
                             <Button Grid.Row="9" Style="{StaticResource DownloadButton}" 
-                                    Click="OnTVStartButtonClicked" />
+                                    Click="OnTVStartButtonClicked" />                            
                         </Grid>
                     </Controls:MetroContentControl>
                 </TabItem>
@@ -288,13 +294,20 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
 
+                            <!-- 
+                                Both of these TextBoxes are bound with UpdateSourceTrigger=PropertyChagned, so that 
+                                when you have focus and you switch tabs back to tv show or movie or something the 
+                                settings properties are already up to date for the trigger that saves the settings.
+                            -->
                             <TextBlock Grid.Row="2" Style="{StaticResource settingLabel}" Text="Movie Output Path" />
-                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=MovieEncodeInfo.OutputPath}" 
-                                     VerticalAlignment="Center" Margin="10"/>
+                            <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="10"
+                                     Text="{Binding Path=MovieEncodeInfo.OutputPath, UpdateSourceTrigger=PropertyChanged}" 
+                                     />
 
                             <TextBlock Grid.Row="3" Style="{StaticResource settingLabel}" Text="TV Show Output Path" />
-                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=TVShowEncodeInfo.OutputPath}" 
-                                     VerticalAlignment="Center" Margin="10"/>
+                            <TextBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Margin="10"
+                                     Text="{Binding Path=TVShowEncodeInfo.OutputPath, UpdateSourceTrigger=PropertyChanged}" 
+                                     />
                         </Grid>
                     </Controls:MetroContentControl>
                 </TabItem>
