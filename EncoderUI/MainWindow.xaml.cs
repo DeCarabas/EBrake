@@ -17,6 +17,7 @@
     using HandBrake.ApplicationServices;
     using HandBrake.ApplicationServices.Services;
     using Newtonsoft.Json;
+using System.ComponentModel;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -45,7 +46,10 @@
             StartRefreshOpticalDrives();
 
             MovieEncodeInfo = new MovieEncodeInfo(this, this.encodeQueue);
+            MovieEncodeInfo.PropertyChanged += OnEncodeInfoPropertyChanged;
+
             TVShowEncodeInfo = new TVShowEncodeInfo(this, this.encodeQueue);
+            TVShowEncodeInfo.PropertyChanged += OnEncodeInfoPropertyChanged;
 
             Tabs.SelectionChanged += OnTabChanged;
 
@@ -122,6 +126,14 @@
         void OnClosingWindow(object sender, ClosingWindowEventArgs e)
         {
             SaveSettings();
+        }
+
+        void OnEncodeInfoPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsEncoding")
+            {
+                Tabs.IsEnabled = ((EncodeInfo)sender).IsEncoding;
+            }
         }
 
         void OnEpisodeListKeyDown(object sender, KeyEventArgs e)
