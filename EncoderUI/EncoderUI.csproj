@@ -139,8 +139,7 @@
   <ItemGroup>
     <Content Include="$(HandbrakePath)\HandbrakeCLI.exe">
       <PublishState>Include</PublishState>
-      <Visible>false</Visible>
-      <CopyToOutputDirectory>true</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
