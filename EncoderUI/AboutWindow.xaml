@@ -1,0 +1,181 @@
+﻿<Window x:Class="EncoderUI.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:behaviours="clr-namespace:MahApps.Metro.Behaviours;assembly=MahApps.Metro"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:LocalControls="clr-namespace:EncoderUI.Controls"
+        Title="About EncoderUI" Height="500" Width="627">
+
+    <Window.Resources>
+        <Style TargetType="Hyperlink">
+            <EventSetter Event="RequestNavigate" Handler="OnLinkClicked" />
+        </Style>
+    </Window.Resources>
+    
+    <i:Interaction.Behaviors>
+        <behaviours:BorderlessWindowBehavior ResizeWithGrip="True" />
+    </i:Interaction.Behaviors>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+ 
+        <Button Grid.Row="1" Grid.Column="2" Margin="10" Click="OnCloseClicked">Close</Button>
+
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" MouseDown="OnWindowTopMouseDown" 
+                        Background="White">
+                <Image Margin="10" Source="/EncoderUI;component/Hedgehog.jpg" Height="64" />
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10" FontSize="48">EncoderUI</TextBlock>
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+
+
+                    <Separator Grid.Row="1" />
+                    <TextBlock Grid.Row="2" Margin="10,10,10,2" FontSize="14" ><Hyperlink NavigateUri="http://friendlyhedgehog.com/EncoderUI">http://friendlyhedgehog.com/EncoderUI</Hyperlink></TextBlock>
+                    <TextBlock Grid.Row="3" Margin="10,2,10,10" FontSize="14" >
+                Code: <Hyperlink NavigateUri="http://github.com/decarabas/EncoderUI">http://github.com/decarabas/EncoderUI</Hyperlink>
+                    </TextBlock>
+
+                    <FlowDocumentScrollViewer Grid.Row="4">
+                        <FlowDocument FontFamily="Calibri">
+                            <Paragraph>Copyright (c) 2011, John Doty (jddoty@gmail.com)</Paragraph>
+                            <Paragraph>All rights reserved.</Paragraph>
+                            <Paragraph>Redistribution and use in source and binary forms, with or without modification, are 
+                        permitted provided that the following conditions are met:</Paragraph>
+
+                            <List>
+                                <ListItem>
+                                    <Paragraph>Redistributions of source code must retain the above copyright notice, 
+                                this list of conditions and the following disclaimer.</Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph>Redistributions in binary form must reproduce the above copyright notice, 
+                                this list of conditions and the following disclaimer in the documentation and/or other 
+                                materials provided with the distribution.</Paragraph>
+                                </ListItem>
+                            </List>
+
+                            <Paragraph>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY 
+                        EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+                        MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+                        COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
+                        EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS 
+                        OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
+                        THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+                        OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+                        OF SUCH DAMAGE.</Paragraph>
+
+                            <Paragraph>HandbrakeCLI.exe, which is distributed with this program, and other libraries are 
+                        licensed under the GPL and can be found at
+                                <Hyperlink NavigateUri="http://handbrake.fr/">http://handbrake.fr/</Hyperlink>
+                            </Paragraph>
+
+                            <Paragraph>This program cheerfully uses:</Paragraph>
+                            <List>
+                                <ListItem>
+                                    <Paragraph>
+                                        <Hyperlink NavigateUri="https://github.com/MahApps/MahApps.Metro">
+                                            MahApps.Metro</Hyperlink> to provide pretty graphics.
+                                    </Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph>
+                                        <Hyperlink NavigateUri="http://json.codeplex.com/">
+                                            Json.NET</Hyperlink> to handle serialization issues.
+                                    </Paragraph>
+                                </ListItem>
+                            </List>
+                        </FlowDocument>
+                    </FlowDocumentScrollViewer>
+                    <TextBlock Grid.Row="5" FontSize="24">Images</TextBlock>
+                    <Grid Grid.Row="6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="10">
+                            <Image Source="/EncoderUI;component/Static.jpg" />
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                        <Hyperlink NavigateUri="http://www.flickr.com/photos/arnisto/1715332001/">"TV Static"</Hyperlink> 
+                        by Arnold Chao of arnisto.com</TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="10">
+                            <Image Source="/EncoderUI;component/Popcorn.jpg" />
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                        <Hyperlink NavigateUri="http://www.flickr.com/photos/jayneandd/4146776985/">"Popcorn"</Hyperlink> 
+                        by jayneandd</TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="10">
+                            <Image Source="/EncoderUI;component/HardDrive.jpg" />
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                        <Hyperlink NavigateUri="http://www.flickr.com/photos/knowprose/111119035/">"Old Hard Drive... circa 1982 (1)"</Hyperlink> 
+                        by Taran Rampersad</TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="10">
+                            <Image Source="/EncoderUI;component/Hedgehog.jpg" />
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                        Icon adapted from <Hyperlink NavigateUri="http://www.flickr.com/photos/meantux/351270020/">"African Pygmy Hedgehog"</Hyperlink> 
+                        by Denis-Carl Robidoux</TextBlock>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="2" Grid.Column="0" Margin="10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <Viewbox Grid.Row="0" Grid.Column="0" Margin="5">
+                                    <Rectangle Width="1" Height="1" Fill="{StaticResource appbar_download}" />
+                                </Viewbox>
+                                <Viewbox Grid.Row="0" Grid.Column="1" Margin="5">
+                                    <Rectangle Width="1" Height="1" Fill="{StaticResource appbar_arrow_right}" />
+                                </Viewbox>
+                                <Viewbox Grid.Row="1" Grid.Column="0" Margin="5">
+                                    <Rectangle Width="1" Height="1" Fill="{StaticResource appbar_close}" />
+                                </Viewbox>
+                            </Grid>
+                            <TextBlock TextWrapping="Wrap">Icons via 
+                        <Hyperlink NavigateUri="http://templarian.com/project_windows_phone_icons/">"Project: Windows Phone Icons"</Hyperlink> 
+                        by <Hyperlink NavigateUri="http://templarian.com/">Templarian</Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
+
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+
+
+
+    </Grid>
+</Window>

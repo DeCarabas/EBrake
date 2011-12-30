@@ -123,6 +123,11 @@ using System.ComponentModel;
             return IntPtr.Zero;
         }
 
+        void OnAboutClicked(object sender, RoutedEventArgs e)
+        {
+            new AboutWindow().ShowDialog();
+        }
+
         void OnClosingWindow(object sender, ClosingWindowEventArgs e)
         {
             SaveSettings();
