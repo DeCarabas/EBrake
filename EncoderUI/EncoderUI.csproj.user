@@ -4,7 +4,7 @@
     <PublishUrlHistory>publish\|http://friendlyhedgehog.com/EncoderUI/</PublishUrlHistory>
     <InstallUrlHistory>http://friendlyhedgehog.com/EncoderUI/</InstallUrlHistory>
     <SupportUrlHistory />
-    <UpdateUrlHistory />
+    <UpdateUrlHistory>http://friendlyhedgehog.com/EncoderUI/</UpdateUrlHistory>
     <BootstrapperUrlHistory />
     <ErrorReportUrlHistory />
     <FallbackCulture>en-US</FallbackCulture>

@@ -47,6 +47,13 @@
             set { this.eta = value; Notify("ETA"); }
         }
 
+        public bool CanStartEncoding
+        {
+            get { return InfoError == InfoError.OK && SettingError == SettingError.OK; }
+        }
+
+        public abstract InfoError InfoError { get; }
+
         public bool IsEncoding
         {
             get { return this.isEncoding; }
@@ -128,9 +135,13 @@
             return fileName;
         }
 
-        protected void Notify(string property)
+        protected virtual void Notify(string property)
         {
             if (PropertyChanged != null) { PropertyChanged(this, new PropertyChangedEventArgs(property)); }
+            if (property == "SettingError" || property == "InfoError")
+            {
+                Notify("CanStartEncoding");
+            }
         }
 
         protected virtual void OnSourceDriveChanged()
@@ -142,6 +153,7 @@
         {
             Dispatcher.BeginInvoke(() =>
                 {
+                    // TODO: How do I detect errors?
                     this.encodeIndex++;
                     if (this.encodeIndex < this.jobQueue.Count)
                     {

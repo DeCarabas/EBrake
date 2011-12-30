@@ -33,6 +33,23 @@
 
         public IList<TitleEncodeInfo> Episodes { get { return this.episodes; } }
 
+        public override InfoError InfoError
+        {
+            get 
+            {
+                if (this.series == null) { return InfoError.NoSeriesTitle; }
+                for (int i = 0; i < this.episodes.Count; i++)
+                {
+                    TitleEncodeInfo episode = this.episodes[i];
+                    if (!String.IsNullOrWhiteSpace(episode.Season) && !String.IsNullOrWhiteSpace(episode.Episode))
+                    {
+                        return InfoError.OK;
+                    }
+                }
+                return InfoError.NoEpisodesToEncode;
+            }
+        }
+
         public bool IsScanning
         {
             get { return this.isScanning; }
@@ -96,6 +113,12 @@
             int i;
             if (int.TryParse(value, out i)) { result = string.Format("{0:00}", i); }
             return result;
+        }
+
+        protected override void Notify(string property)
+        {
+            base.Notify(property);
+            if (property == "Series") { Notify("InfoError"); }
         }
 
         void OnEpisodesChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -204,6 +227,8 @@
             {
                 this.propagating = false;
             }
+
+            Notify("InfoError");
         }
 
         public void ScanDisc()

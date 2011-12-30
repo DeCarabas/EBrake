@@ -16,6 +16,15 @@
         {
         }
 
+        public override InfoError InfoError
+        {
+            get 
+            {
+                if (String.IsNullOrWhiteSpace(MovieTitle)) { return InfoError.NoMovieTitle; }
+                return InfoError.OK; 
+            }
+        }
+
         public string MovieTitle
         {
             get { return this.movieTitle; }
@@ -30,7 +39,11 @@
 
         protected override void AddEncodingJobs(List<Job> encodingQueue)
         {
-            string outputFileName = EscapeFileName(String.Format("{0} ({1}).m4v", MovieTitle, MovieYear));
+            string baseName = MovieTitle.Trim();
+            if (!String.IsNullOrWhiteSpace(MovieYear)) { baseName += String.Format("({0})", MovieYear.Trim()); }
+            baseName += ".m4v";
+
+            string outputFileName = EscapeFileName(baseName);            
             string outputFile = Path.Combine(OutputPath, outputFileName);
 
             string commandLine = String.Format(
@@ -46,6 +59,12 @@
                 Destination = outputFile, 
                 CustomQuery = true
             });
+        }
+
+        protected override void Notify(string property)
+        {
+            base.Notify(property);
+            if (property == "MovieTitle") { Notify("InfoError"); }
         }
 
         protected override void OnSourceDriveChanged()

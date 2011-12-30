@@ -24,8 +24,8 @@
                     </Setter>
                 </DataTrigger>
             </Style.Triggers>
-        </Style>
-
+        </Style>        
+        
         <Style TargetType="Button" x:Key="DownloadButton" BasedOn="{StaticResource MetroCircleButtonStyle}">
             <Setter Property="Margin" Value="5" />
             <Setter Property="Width" Value="55" />
@@ -40,7 +40,7 @@
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding SettingError}" Value="OK">
+                <DataTrigger Binding="{Binding CanStartEncoding}" Value="True">
                     <Setter Property="IsEnabled" Value="true" />
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
@@ -112,8 +112,13 @@
 
                             <Button Click="OnFixSettingsClicked" Style="{StaticResource SettingsWarningBar}" />
 
-                            <TextBox Grid.Row="1" Text="{Binding Path=MovieTitle}" Margin="10" 
-                                     TextAlignment="Center" FontSize="24" Opacity="0.9" />
+                            <!-- 
+                                This TextBox isbound with UpdateSourceTrigger=PropertyChanged, so that the 
+                                enable/disable of the "start" button happens naturally. (There may not be a 
+                                focus-change event to force the binding.)
+                            -->
+                            <TextBox Grid.Row="1" Text="{Binding Path=MovieTitle, UpdateSourceTrigger=PropertyChanged}" 
+                                     Margin="10" TextAlignment="Center" FontSize="24" Opacity="0.9" />
                             <TextBlock Grid.Row="2" Style="{StaticResource entryLabel}" Text="Movie Title" />
 
                             <TextBox Grid.Row="3" Text="{Binding Path=MovieYear}" Margin="10" TextAlignment="Center" 
@@ -153,8 +158,13 @@
 
                             <Button Click="OnFixSettingsClicked" Style="{StaticResource SettingsWarningBar}" />
 
-                            <TextBox Grid.Row="1" Text="{Binding Path=Series}" Margin="10" TextAlignment="Center" 
-                                     FontSize="24" Opacity="0.9" />
+                            <!-- 
+                                This TextBox isbound with UpdateSourceTrigger=PropertyChanged, so that the 
+                                enable/disable of the "start" button happens naturally. (There may not be a 
+                                focus-change event to force the binding.)
+                            -->
+                            <TextBox Grid.Row="1" Text="{Binding Path=Series, UpdateSourceTrigger=PropertyChanged}" 
+                                     Margin="10" TextAlignment="Center" FontSize="24" Opacity="0.9" />
                             <TextBlock Grid.Row="2" Style="{StaticResource entryLabel}" Text="Series" />
 
                             <Grid Grid.Row="3" Background="Gray" TextBlock.FontSize="14" TextBlock.Foreground="White" 
@@ -299,7 +309,7 @@
                             </ComboBox>
 
                             <!-- 
-                                Both of these TextBoxes are bound with UpdateSourceTrigger=PropertyChagned, so that 
+                                Both of these TextBoxes are bound with UpdateSourceTrigger=PropertyChanged, so that 
                                 when you have focus and you switch tabs back to tv show or movie or something the 
                                 settings properties are already up to date for the trigger that saves the settings.
                             -->

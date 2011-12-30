@@ -124,6 +124,7 @@
     <Compile Include="Controls\WindowButtons.xaml.cs">
       <DependentUpon>WindowButtons.xaml</DependentUpon>
     </Compile>
+    <Compile Include="InfoError.cs" />
     <Compile Include="TitleEncodeInfo.cs" />
     <Compile Include="TVShowEncodeInfo.cs" />
     <Compile Include="SettingError.cs" />
