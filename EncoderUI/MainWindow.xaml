@@ -5,7 +5,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:LocalControls="clr-namespace:EBrake.Controls"
-        Title="Encoder" Height="709" Width="799">
+        Title="EBrake" Height="550" Width="750">
 
     <Window.Resources>
         <Style TargetType="Button" x:Key="SettingsWarningBar" BasedOn="{StaticResource WarningBar}">
@@ -128,8 +128,9 @@
                             <ProgressBar Grid.Row="5" Value="{Binding Path=PercentComplete}" />
                             <TextBlock Grid.Row="6" HorizontalAlignment="Center" Text="{Binding Path=ETA}" />
 
-                            <Button Grid.Row="7" Grid.Column="1" Style="{StaticResource DownloadButton}" 
-                                    Click="OnMovieEncodeButtonClicked" />
+                            <StackPanel Grid.Row="7" Grid.Column="1">
+                                <Button Style="{StaticResource DownloadButton}" Click="OnMovieEncodeButtonClicked" />
+                            </StackPanel>
                         </Grid>
                     </Controls:MetroContentControl>
                 </TabItem>
@@ -324,7 +325,7 @@
                                      />
                             
                             <Button Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" Margin="0,20,10,0" 
-                                    Click="OnAboutClicked">About EncoderUI</Button>
+                                    Click="OnAboutClicked">About EBrake</Button>
                         </Grid>
                     </Controls:MetroContentControl>
                 </TabItem>
