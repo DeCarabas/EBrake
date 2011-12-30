@@ -146,11 +146,12 @@ using System.ComponentModel;
         {
             if (e.PropertyName == "IsEncoding")
             {
+                var encodeInfo = (EncodeInfo)sender;
                 foreach (TabItem tabItem in Tabs.Items)
                 {
                     if (tabItem != Tabs.SelectedItem)
                     {
-                        tabItem.IsEnabled = false;
+                        tabItem.IsEnabled = !encodeInfo.IsEncoding;
                     }
                 }                
             }
