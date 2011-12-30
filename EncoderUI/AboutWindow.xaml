@@ -4,7 +4,7 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:LocalControls="clr-namespace:EBrake.Controls"
-        Title="About EncoderUI" Height="500" Width="627">
+        Title="About EBrake" Height="500" Width="627">
 
     <Window.Resources>
         <Style TargetType="Hyperlink">
@@ -32,7 +32,7 @@
             
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" MouseDown="OnWindowTopMouseDown" 
                         Background="White">
-                <Image Margin="10" Source="/EncoderUI;component/Hedgehog.jpg" Height="64" />
+                <Image Margin="10" Source="/EBrake;component/Hedgehog.jpg" Height="64" />
                 <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10" FontSize="48" 
                            FontWeight="Light">
                     EBrake
@@ -55,7 +55,7 @@
                     <Separator Grid.Row="1" />
                     <TextBlock Grid.Row="2" Margin="10,10,10,2" FontSize="14" ><Hyperlink NavigateUri="http://friendlyhedgehog.com/EncoderUI">http://friendlyhedgehog.com/EncoderUI</Hyperlink></TextBlock>
                     <TextBlock Grid.Row="3" Margin="10,2,10,10" FontSize="14" >
-                Code: <Hyperlink NavigateUri="http://github.com/decarabas/EncoderUI">http://github.com/decarabas/EncoderUI</Hyperlink>
+                Code: <Hyperlink NavigateUri="http://github.com/decarabas/EBrake">http://github.com/decarabas/EBrake</Hyperlink>
                     </TextBlock>
 
                     <LocalControls:FixedFlowDocumentViewer  Grid.Row="4" VerticalScrollBarVisibility="Disabled">
@@ -122,25 +122,25 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Grid.Row="0" Grid.Column="0" Margin="10">
-                            <Image Source="/EncoderUI;component/Static.jpg" />
+                            <Image Source="/EBrake;component/Static.jpg" />
                             <TextBlock TextAlignment="Center" TextWrapping="Wrap">
                         <Hyperlink NavigateUri="http://www.flickr.com/photos/arnisto/1715332001/">"TV Static"</Hyperlink> 
                         by Arnold Chao of arnisto.com</TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" Margin="10">
-                            <Image Source="/EncoderUI;component/Popcorn.jpg" />
+                            <Image Source="/EBrake;component/Popcorn.jpg" />
                             <TextBlock TextAlignment="Center" TextWrapping="Wrap">
                         <Hyperlink NavigateUri="http://www.flickr.com/photos/jayneandd/4146776985/">"Popcorn"</Hyperlink> 
                         by jayneandd</TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="1" Grid.Column="0" Margin="10">
-                            <Image Source="/EncoderUI;component/HardDrive.jpg" />
+                            <Image Source="/EBrake;component/HardDrive.jpg" />
                             <TextBlock TextAlignment="Center" TextWrapping="Wrap">
                         <Hyperlink NavigateUri="http://www.flickr.com/photos/knowprose/111119035/">"Old Hard Drive... circa 1982 (1)"</Hyperlink> 
                         by Taran Rampersad</TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="1" Grid.Column="1" Margin="10">
-                            <Image Source="/EncoderUI;component/Hedgehog.jpg" />
+                            <Image Source="/EBrake;component/Hedgehog.jpg" />
                             <TextBlock TextAlignment="Center" TextWrapping="Wrap">
                         Icon adapted from <Hyperlink NavigateUri="http://www.flickr.com/photos/meantux/351270020/">"African Pygmy Hedgehog"</Hyperlink> 
                         by Denis-Carl Robidoux</TextBlock>

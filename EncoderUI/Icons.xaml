@@ -31,6 +31,6 @@
         <Path Width="20" Height="20" Canvas.Left="14" Canvas.Top="14" Stretch="Fill" Fill="#FF000000" 
               Data="F1 M 17,14L 24,21L 30.9999,14.0001L 33.9999,17.0001L 27,24L 33.9999,31L 31,34L 24,27L 17,34L 14,31L 21,24L 14,17L 17,14 Z "/>
     </Canvas>
-    <VisualBrush x:Key="appbar_close" Stretch="Fill" Visual="{StaticResource appbar_close_icon}" />    
+    <VisualBrush x:Key="appbar_close" Stretch="Fill" Visual="{StaticResource appbar_close_icon}" />
 
 </ResourceDictionary>
