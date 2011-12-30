@@ -33,7 +33,10 @@
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" MouseDown="OnWindowTopMouseDown" 
                         Background="White">
                 <Image Margin="10" Source="/EncoderUI;component/Hedgehog.jpg" Height="64" />
-                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10" FontSize="48">EncoderUI</TextBlock>
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10" FontSize="48" 
+                           FontWeight="Light">
+                    Encoder UI
+                </TextBlock>
             </StackPanel>
 
             <ScrollViewer Grid.Row="1">
@@ -55,9 +58,9 @@
                 Code: <Hyperlink NavigateUri="http://github.com/decarabas/EncoderUI">http://github.com/decarabas/EncoderUI</Hyperlink>
                     </TextBlock>
 
-                    <FlowDocumentScrollViewer Grid.Row="4">
+                    <LocalControls:FixedFlowDocumentViewer  Grid.Row="4" VerticalScrollBarVisibility="Disabled">
                         <FlowDocument FontFamily="Calibri">
-                            <Paragraph>Copyright (c) 2011, John Doty (jddoty@gmail.com)</Paragraph>
+                            <Paragraph>Copyright (c) 2011 John Doty (jddoty@gmail.com)</Paragraph>
                             <Paragraph>All rights reserved.</Paragraph>
                             <Paragraph>Redistribution and use in source and binary forms, with or without modification, are 
                         permitted provided that the following conditions are met:</Paragraph>
@@ -105,7 +108,7 @@
                                 </ListItem>
                             </List>
                         </FlowDocument>
-                    </FlowDocumentScrollViewer>
+                    </LocalControls:FixedFlowDocumentViewer>
                     <TextBlock Grid.Row="5" FontSize="24">Images</TextBlock>
                     <Grid Grid.Row="6">
                         <Grid.ColumnDefinitions>
@@ -170,12 +173,8 @@
                             </TextBlock>
                         </StackPanel>
                     </Grid>
-
                 </Grid>
             </ScrollViewer>
         </Grid>
-
-
-
     </Grid>
 </Window>

@@ -131,6 +131,7 @@
     </Compile>
     <Compile Include="Controls\ClosingWindowEventHandler.cs" />
     <Compile Include="Controls\ClosingWindowEventArgs.cs" />
+    <Compile Include="Controls\FlowDocumentViewer.cs" />
     <Compile Include="Controls\WindowButtons.xaml.cs">
       <DependentUpon>WindowButtons.xaml</DependentUpon>
     </Compile>
