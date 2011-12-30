@@ -9,3 +9,5 @@ The icons are from @Templarian: http://templarian.com/project_windows_phone_icon
 Popcorn.jpg from http://www.flickr.com/photos/jayneandd/4146776985/
 Static.jpg from http://www.flickr.com/photos/arnisto/1715332001/
 HardDrive.jpg from http://www.flickr.com/photos/knowprose/111119035/
+Hedgehog in icon adapted from
+http://www.flickr.com/photos/meantux/351270020/

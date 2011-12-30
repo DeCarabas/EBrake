@@ -66,6 +66,9 @@
   <PropertyGroup>
     <SignManifests>true</SignManifests>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Hedgehog.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="HandBrake.ApplicationServices">
       <HintPath>$(HandbrakePath)\HandBrake.ApplicationServices.dll</HintPath>
@@ -142,6 +145,7 @@
       <PublishState>Include</PublishState>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Hedgehog.ico" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
