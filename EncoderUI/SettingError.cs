@@ -1,4 +1,4 @@
-﻿namespace EncoderUI
+﻿namespace EBrake
 {
     public enum SettingError
     {

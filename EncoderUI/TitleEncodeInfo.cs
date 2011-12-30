@@ -1,4 +1,4 @@
-﻿namespace EncoderUI
+﻿namespace EBrake
 {
     using System;
     using System.ComponentModel;

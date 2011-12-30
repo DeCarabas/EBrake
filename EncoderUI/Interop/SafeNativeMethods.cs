@@ -1,10 +1,6 @@
-﻿namespace EncoderUI.Interop
+﻿namespace EBrake.Interop
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Windows.Threading;
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Sequential)]

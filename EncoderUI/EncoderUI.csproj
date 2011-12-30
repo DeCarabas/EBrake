@@ -8,8 +8,8 @@
     <ProjectGuid>{C69E3E15-CF78-4D5F-AAA8-91155EB464E9}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EncoderUI</RootNamespace>
-    <AssemblyName>EncoderUI</AssemblyName>
+    <RootNamespace>EBrake</RootNamespace>
+    <AssemblyName>EBrake</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>

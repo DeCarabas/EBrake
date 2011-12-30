@@ -1,4 +1,4 @@
-﻿namespace EncoderUI
+﻿namespace EBrake
 {
     using System;
     using System.Collections.Generic;
@@ -6,8 +6,8 @@
     using System.IO;
     using System.Windows.Threading;
     using HandBrake.ApplicationServices;
-    using HandBrake.ApplicationServices.Services;
     using HandBrake.ApplicationServices.Model;
+    using HandBrake.ApplicationServices.Services;
 
     public abstract class EncodeInfo : DispatcherObject, INotifyPropertyChanged
     {

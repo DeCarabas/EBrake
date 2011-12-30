@@ -1,4 +1,4 @@
-﻿namespace EncoderUI
+﻿namespace EBrake
 {
     using System;
     using System.Collections.Generic;
@@ -12,8 +12,8 @@
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Interop;
-    using EncoderUI.Controls;
-    using EncoderUI.Interop;
+    using EBrake.Controls;
+    using EBrake.Interop;
     using HandBrake.ApplicationServices;
     using HandBrake.ApplicationServices.Services;
     using Newtonsoft.Json;

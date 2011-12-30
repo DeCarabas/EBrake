@@ -1,4 +1,4 @@
-﻿namespace EncoderUI.Controls
+﻿namespace EBrake.Controls
 {
     using System;
 
