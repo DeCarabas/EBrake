@@ -46,6 +46,7 @@
                         return InfoError.OK;
                     }
                 }
+                if (SourceDrive != null && !SourceDrive.IsReady) { return InfoError.DiscNotReady; }
                 return InfoError.NoEpisodesToEncode;
             }
         }
@@ -186,6 +187,8 @@
 
             this.episodes.Clear();
             ScanDisc();
+
+            Notify("InfoError");
         }
 
         void OnTitleEncodeInfoChanged(object sender, PropertyChangedEventArgs args)

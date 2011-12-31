@@ -21,6 +21,7 @@
             get 
             {
                 if (String.IsNullOrWhiteSpace(MovieTitle)) { return InfoError.NoMovieTitle; }
+                if (SourceDrive != null && !SourceDrive.IsReady) { return InfoError.DiscNotReady; }
                 return InfoError.OK; 
             }
         }
@@ -70,6 +71,7 @@
         protected override void OnSourceDriveChanged()
         {
             base.OnSourceDriveChanged();
+            Notify("InfoError");
         }
     }
 }

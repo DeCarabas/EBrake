@@ -3,6 +3,7 @@
     public enum InfoError
     {
         OK,
+        DiscNotReady,
 
         NoMovieTitle,
 
