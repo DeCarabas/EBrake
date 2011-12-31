@@ -315,16 +315,37 @@
                                 settings properties are already up to date for the trigger that saves the settings.
                             -->
                             <TextBlock Grid.Row="2" Style="{StaticResource settingLabel}" Text="Movie Output Path" />
-                            <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="10"
-                                     Text="{Binding Path=MovieEncodeInfo.OutputPath, UpdateSourceTrigger=PropertyChanged}" 
+                            <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox VerticalAlignment="Center" Margin="10,10,2,10" 
+                                         Text="{Binding Path=MovieEncodeInfo.OutputPath, UpdateSourceTrigger=PropertyChanged}" 
                                      />
+                                <Button Grid.Column="1" Margin="2,10,10,10" VerticalAlignment="Center" 
+                                        Tag="{Binding Path=MovieEncodeInfo}" Click="OnBrowseClicked" >
+                                    Browse...
+                                </Button>
+                            </Grid>
+
 
                             <TextBlock Grid.Row="3" Style="{StaticResource settingLabel}" Text="TV Show Output Path" />
-                            <TextBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Margin="10"
+                            <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox VerticalAlignment="Center" Margin="10,10,2,10"
                                      Text="{Binding Path=TVShowEncodeInfo.OutputPath, UpdateSourceTrigger=PropertyChanged}" 
                                      />
-                            
-                            <Button Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" Margin="0,20,10,0" 
+                                <Button Grid.Column="1" Margin="2,10,10,10" VerticalAlignment="Center" 
+                                            Tag="{Binding Path=TVShowEncodeInfo}" Click="OnBrowseClicked">
+                                    Browse...
+                                </Button>
+                            </Grid>
+                        
+                        <Button Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" Margin="0,20,10,0" 
                                     Click="OnAboutClicked">About EBrake</Button>
                         </Grid>
                     </Controls:MetroContentControl>

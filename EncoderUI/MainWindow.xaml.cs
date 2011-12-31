@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.ComponentModel;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -17,7 +18,6 @@
     using HandBrake.ApplicationServices;
     using HandBrake.ApplicationServices.Services;
     using Newtonsoft.Json;
-using System.ComponentModel;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -126,6 +126,24 @@ using System.ComponentModel;
         void OnAboutClicked(object sender, RoutedEventArgs e)
         {
             new AboutWindow().ShowDialog();
+        }
+
+        void OnBrowseClicked(object sender, RoutedEventArgs e)
+        {
+            var encodeInfo = ((FrameworkElement)e.OriginalSource).Tag as EncodeInfo;
+            if (encodeInfo != null)
+            {
+                var dialog = new System.Windows.Forms.FolderBrowserDialog 
+                { 
+                    SelectedPath = encodeInfo.OutputPath, 
+                    ShowNewFolderButton = true 
+                };
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    encodeInfo.OutputPath = dialog.SelectedPath;
+                }
+            }
         }
 
         void OnClosingWindow(object sender, ClosingWindowEventArgs e)
