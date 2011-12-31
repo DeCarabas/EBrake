@@ -40,25 +40,15 @@
             </StackPanel>
 
             <ScrollViewer Grid.Row="1">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                    </Grid.RowDefinitions>
-
-
-                    <Separator Grid.Row="1" />
-                    <TextBlock Grid.Row="2" Margin="10,10,10,2" FontSize="14" ><Hyperlink NavigateUri="http://friendlyhedgehog.com/EncoderUI">http://friendlyhedgehog.com/EncoderUI</Hyperlink></TextBlock>
-                    <TextBlock Grid.Row="3" Margin="10,2,10,10" FontSize="14" >
-                Code: <Hyperlink NavigateUri="http://github.com/decarabas/EBrake">http://github.com/decarabas/EBrake</Hyperlink>
+                <StackPanel>
+                    <Separator />
+                    <TextBlock Margin="10,10,10,2" FontSize="14" >
+                        <Hyperlink NavigateUri="http://friendlyhedgehog.com/EncoderUI">http://friendlyhedgehog.com/EncoderUI</Hyperlink></TextBlock>
+                    <TextBlock Margin="10,2,10,10" FontSize="14" >
+                        Code: <Hyperlink NavigateUri="http://github.com/decarabas/EBrake">http://github.com/decarabas/EBrake</Hyperlink>
                     </TextBlock>
 
-                    <LocalControls:FixedFlowDocumentViewer  Grid.Row="4" VerticalScrollBarVisibility="Disabled">
+                    <LocalControls:FixedFlowDocumentViewer VerticalScrollBarVisibility="Disabled">
                         <FlowDocument FontFamily="Calibri">
                             <Paragraph>Copyright (c) 2011 John Doty (jddoty@gmail.com)</Paragraph>
                             <Paragraph>All rights reserved.</Paragraph>
@@ -109,8 +99,8 @@
                             </List>
                         </FlowDocument>
                     </LocalControls:FixedFlowDocumentViewer>
-                    <TextBlock Grid.Row="5" FontSize="24">Images</TextBlock>
-                    <Grid Grid.Row="6">
+                    <TextBlock FontSize="24">Images</TextBlock>
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
@@ -173,7 +163,7 @@
                             </TextBlock>
                         </StackPanel>
                     </Grid>
-                </Grid>
+                </StackPanel>
             </ScrollViewer>
         </Grid>
     </Grid>
