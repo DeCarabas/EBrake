@@ -53,12 +53,15 @@
             get { return this.movieTitle; }
             set
             {
-                this.movieTitle = value;
+                if (!String.Equals(value, MovieTitle))
+                {
+                    this.movieTitle = value;
 
-                if (this.queryTimer.IsEnabled) { this.queryTimer.Stop(); }
-                this.queryTimer.Start();
+                    if (this.queryTimer.IsEnabled) { this.queryTimer.Stop(); }
+                    this.queryTimer.Start();
 
-                Notify("MovieTitle");
+                    Notify("MovieTitle");
+                }
             }
         }
 
@@ -109,11 +112,32 @@
         {
             this.queryTimer.Stop();
 
-            if (this.queryCancellationSource != null) { this.queryCancellationSource.Cancel(); }
-            this.queryCancellationSource = new CancellationTokenSource();
-            CancellationToken token = this.queryCancellationSource.Token;
-            MovieInfo.StartQueryMetadata(MovieTitle, MovieYear, token)
-                .ContinueWith(t => Dispatcher.BeginInvoke(UpdateMetadata, t, token), token);
+            if (String.IsNullOrWhiteSpace(MovieTitle))
+            {
+                Backdrop = stockBackdrop;
+            }
+            else
+            {
+                if (this.queryCancellationSource != null) { this.queryCancellationSource.Cancel(); }
+                this.queryCancellationSource = new CancellationTokenSource();
+                CancellationToken token = this.queryCancellationSource.Token;
+                MovieInfo.StartQueryMetadata(MovieTitle, token)
+                    .ContinueWith(t => Dispatcher.BeginInvoke(UpdateMetadata, t, token), token);
+            }
+        }
+
+        public void SelectMetadata(TmdbMovie movie)
+        {            
+            MovieTitle = movie.Name;
+
+            DateTime released;
+            if (DateTime.TryParse(movie.Released, out released))
+            {
+                MovieYear = released.Year.ToString();
+            }
+
+            TmdbImage image = movie.Backdrops.OrderByDescending(i => i.Image.Width).FirstOrDefault();
+            if (image != null) { Backdrop = image.Image.Url; } else { Backdrop = stockBackdrop; }
         }
 
         void UpdateMetadata(Task<TmdbMovie[]> task, CancellationToken token)
@@ -123,9 +147,9 @@
             // Last chance for cancellation... after this, we know we won't get canceled because cancellation can 
             // only happen on this thread.
             //
-            if (task.Status == TaskStatus.Canceled || token.IsCancellationRequested) { return; }
+            if (task.Status != TaskStatus.RanToCompletion || token.IsCancellationRequested) { return; }
 
-            string newBackdrop = null;
+            bool matched = false;
             TmdbMovie[] movies = null;
             try
             {
@@ -135,18 +159,17 @@
                     TmdbMovie movie = movies[0];
                     if (String.Equals(movie.Name, MovieTitle, StringComparison.CurrentCultureIgnoreCase))
                     {
-                        TmdbImage image = movie.Backdrops.OrderByDescending(i => i.Image.Width).First();
-                        newBackdrop = image.Image.Url;
+                        SelectMetadata(movie);
+                        matched = true;
                     }
                 }
-
             }
             catch
             {
                 // Oh well, we did our best.
             }
 
-            Backdrop = newBackdrop ?? stockBackdrop;
+            if (!matched) { Backdrop = stockBackdrop; }
             this.potentialMatches.Clear();
             if (movies != null)
             {

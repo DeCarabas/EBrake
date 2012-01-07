@@ -116,9 +116,31 @@
                                 This TextBox isbound with UpdateSourceTrigger=PropertyChanged, so that the 
                                 enable/disable of the "start" button happens naturally. (There may not be a 
                                 focus-change event to force the binding.)
+                            
+                            
                             -->
                             <TextBox Grid.Row="1" Text="{Binding Path=MovieTitle, UpdateSourceTrigger=PropertyChanged}" 
-                                     Margin="10" TextAlignment="Center" FontSize="24" Opacity="0.9" />
+                                     Margin="10" TextAlignment="Center" FontSize="24" Opacity="0.9"  Name="MovieTitleBox"
+                                     PreviewKeyDown="OnMovieTitleKeyDown" LostKeyboardFocus="OnMovieTitleLostFocus" />
+                            <Popup PlacementTarget="{Binding ElementName=MovieTitleBox}" Placement="Bottom" 
+                                   Width="{Binding ElementName=MovieTitleBox, Path=ActualWidth}"
+                                   x:Name="MovieSearchResults">
+                                <ListBox ItemsSource="{Binding PotentialMatches}" x:Name="PotentialMovieTitleList"
+                                         SelectionChanged="OnMovieSearchResultsSelectionChanged">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock FontSize="24" Opacity="0.9" TextAlignment="Center">
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="{}{0} {1}">
+                                                        <Binding Path="Name" />
+                                                        <Binding Path="DisplayReleaseYear" />
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Popup>
                             <TextBlock Grid.Row="2" Style="{StaticResource entryLabel}" Text="Movie Title" />
 
                             <TextBox Grid.Row="3" Text="{Binding Path=MovieYear}" Margin="10" TextAlignment="Center" 

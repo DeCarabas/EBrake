@@ -15,6 +15,7 @@
     using System.Windows.Interop;
     using EBrake.Controls;
     using EBrake.Interop;
+    using EBrake.Metadata.Tmdb;
     using HandBrake.ApplicationServices;
     using HandBrake.ApplicationServices.Services;
     using Newtonsoft.Json;
@@ -133,10 +134,10 @@
             var encodeInfo = ((FrameworkElement)e.OriginalSource).Tag as EncodeInfo;
             if (encodeInfo != null)
             {
-                var dialog = new System.Windows.Forms.FolderBrowserDialog 
-                { 
-                    SelectedPath = encodeInfo.OutputPath, 
-                    ShowNewFolderButton = true 
+                var dialog = new System.Windows.Forms.FolderBrowserDialog
+                {
+                    SelectedPath = encodeInfo.OutputPath,
+                    ShowNewFolderButton = true
                 };
 
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -176,7 +177,11 @@
                     {
                         tabItem.IsEnabled = !encodeInfo.IsEncoding;
                     }
-                }                
+                }
+            }
+            else if (e.PropertyName == "MovieTitle")
+            {
+                MovieSearchResults.IsOpen = true;
             }
         }
 
@@ -233,6 +238,80 @@
         void OnMovieEncodeButtonClicked(object sender, RoutedEventArgs e)
         {
             OnEncodeButtonClicked(MovieEncodeInfo);
+        }
+
+        void OnMovieSearchResultsSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (PotentialMovieTitleList.IsFocused)
+            {
+                var movie = (TmdbMovie)PotentialMovieTitleList.SelectedItem;
+                MovieEncodeInfo.SelectMetadata(movie);
+            }
+        }
+
+        void OnMovieTitleKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Down)
+            {
+                if (!MovieSearchResults.IsOpen)
+                {
+                    MovieSearchResults.IsOpen = true;
+                }
+                else if (PotentialMovieTitleList.Items.Count > 0)
+                {
+                    if (PotentialMovieTitleList.SelectedIndex == -1)
+                    {
+                        PotentialMovieTitleList.SelectedIndex = 0;
+                    }
+                    else if (PotentialMovieTitleList.SelectedIndex < PotentialMovieTitleList.Items.Count - 1)
+                    {
+                        PotentialMovieTitleList.SelectedIndex++;
+                    }
+                }
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Up)
+            {
+                if (!MovieSearchResults.IsOpen)
+                {
+                    MovieSearchResults.IsOpen = true;
+                }
+                else if (PotentialMovieTitleList.Items.Count > 0)
+                {
+                    if (PotentialMovieTitleList.SelectedIndex == -1)
+                    {
+                        PotentialMovieTitleList.SelectedIndex = 0;
+                    }
+                    else if (PotentialMovieTitleList.SelectedIndex > 0)
+                    {
+                        PotentialMovieTitleList.SelectedIndex--;
+                    }
+                }
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Enter)
+            {
+                if (MovieSearchResults.IsOpen)
+                {
+                    if (PotentialMovieTitleList.SelectedItem != null)
+                    {
+                        var movie = (TmdbMovie)PotentialMovieTitleList.SelectedItem;
+                        MovieEncodeInfo.SelectMetadata(movie);
+                        MovieTitleBox.Select(MovieTitleBox.Text.Length, 0);
+                        MovieSearchResults.IsOpen = false;
+                    }
+                    e.Handled = true;
+                }
+            }
+            else if (e.Key == Key.Escape)
+            {
+                MovieSearchResults.IsOpen = false;
+            }
+        }
+
+        void OnMovieTitleLostFocus(object sender, RoutedEventArgs e)
+        {
+            MovieSearchResults.IsOpen = false;
         }
 
         void OnPreviewShowClicked(object sender, RoutedEventArgs e)

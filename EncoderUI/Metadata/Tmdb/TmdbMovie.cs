@@ -1,7 +1,8 @@
 ﻿namespace EBrake.Metadata.Tmdb
 {
-    using Newtonsoft.Json;
+    using System;
     using System.Collections.Generic;
+    using Newtonsoft.Json;
 
     [JsonObject(MemberSerialization.OptIn)]
     public class TmdbMovie
@@ -83,5 +84,15 @@
 
         [JsonProperty("version")]
         public int Version { get; set; }
+
+        public string DisplayReleaseYear
+        {
+            get
+            {
+                DateTime release;
+                if (DateTime.TryParse(Released, out release)) { return String.Format("({0})", release.Year); }
+                return String.Empty;
+            }
+        }
     }
 }
