@@ -13,17 +13,17 @@
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Interop;
-    using EBrake.Controls;
     using EBrake.Interop;
     using EBrake.Metadata.Tmdb;
     using HandBrake.ApplicationServices;
     using HandBrake.ApplicationServices.Services;
+    using MahApps.Metro.Controls;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : MetroWindow
     {
         public static readonly DependencyProperty MovieEncodeInfoProperty = DependencyProperty.Register(
             "MovieEncodeInfo", typeof(MovieEncodeInfo), typeof(MainWindow));
@@ -55,6 +55,7 @@
             Tabs.SelectionChanged += OnTabChanged;
 
             SourceInitialized += OnSourceInitialized;
+            Closing += OnClosingWindow;
 
             LoadSettings();
         }
@@ -147,7 +148,7 @@
             }
         }
 
-        void OnClosingWindow(object sender, ClosingWindowEventArgs e)
+        void OnClosingWindow(object sender, CancelEventArgs e)
         {
             SaveSettings();
             if (MovieEncodeInfo.IsEncoding) { MovieEncodeInfo.Stop(); }
@@ -308,7 +309,7 @@
         }
 
         void OnMovieTitleLostFocus(object sender, RoutedEventArgs e)
-        {            
+        {
             MovieSearchResults.IsOpen = false;
         }
 
