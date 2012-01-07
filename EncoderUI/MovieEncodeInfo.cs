@@ -3,17 +3,37 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using System.Windows.Threading;
+    using EBrake.Metadata.Tmdb;
     using HandBrake.ApplicationServices.Model;
     using HandBrake.ApplicationServices.Services;
 
     public sealed class MovieEncodeInfo : EncodeInfo
     {
+        static readonly Random random = new Random();
+        const string stockBackdrop = "/EBrake;component/Popcorn.jpg";
+
+        string backdrop = stockBackdrop;
         string movieTitle;
         string movieYear;
+        CancellationTokenSource queryCancellationSource;
+        DispatcherTimer queryTimer = new DispatcherTimer();
 
         public MovieEncodeInfo(MainWindow mainWindow, Queue encodingQueue)
             : base(mainWindow, encodingQueue)
         {
+            this.queryTimer.Interval = TimeSpan.FromSeconds(1);
+            this.queryTimer.Tick += QueryMetadata;
+            this.queryTimer.IsEnabled = false;
+        }
+
+        public string Backdrop
+        {
+            get { return this.backdrop; }
+            set { this.backdrop = value; Notify("Backdrop"); }
         }
 
         public override InfoError InfoError
@@ -29,7 +49,15 @@
         public string MovieTitle
         {
             get { return this.movieTitle; }
-            set { this.movieTitle = value; Notify("MovieTitle"); }
+            set 
+            { 
+                this.movieTitle = value;
+
+                if (this.queryTimer.IsEnabled) { this.queryTimer.Stop(); }
+                this.queryTimer.Start();
+
+                Notify("MovieTitle");
+            }
         }
 
         public string MovieYear
@@ -71,6 +99,45 @@
         {
             base.OnSourceDriveChanged();
             Notify("InfoError");
+        }
+
+        void QueryMetadata(object sender, EventArgs e)
+        {
+            this.queryTimer.Stop();
+
+            if (this.queryCancellationSource != null) { this.queryCancellationSource.Cancel(); }
+            this.queryCancellationSource = new CancellationTokenSource();
+            CancellationToken token = this.queryCancellationSource.Token;
+            MovieInfo.StartQueryMetadata(MovieTitle, MovieYear, token)
+                .ContinueWith(t => Dispatcher.BeginInvoke(UpdateMetadata, t, token), token);
+        }
+
+        void UpdateMetadata(Task<TmdbMovie[]> task, CancellationToken token)
+        {
+            VerifyAccess();
+            //
+            // Last chance for cancellation... after this, we know we won't get canceled because cancellation can 
+            // only happen on this thread.
+            //
+            if (task.Status == TaskStatus.Canceled || token.IsCancellationRequested) { return; }
+
+            string newBackdrop = null;
+            try
+            {
+                TmdbMovie[] movies = task.Result;
+                if (movies.Length > 0 && movies[0].Backdrops.Count > 0)
+                {
+                    TmdbMovie movie = movies[0];
+                    TmdbImage image = movie.Backdrops.OrderByDescending(i => i.Image.Width).First();
+                    newBackdrop = image.Image.Url;
+                }
+            }
+            catch
+            {
+                // Oh well, we did our best.
+            }
+
+            Backdrop = newBackdrop ?? stockBackdrop;
         }
     }
 }

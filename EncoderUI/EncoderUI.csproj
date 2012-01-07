@@ -137,6 +137,10 @@
       <DependentUpon>WindowButtons.xaml</DependentUpon>
     </Compile>
     <Compile Include="InfoError.cs" />
+    <Compile Include="Metadata\MovieInfo.cs" />
+    <Compile Include="Metadata\Tmdb\TmdbImageInfo.cs" />
+    <Compile Include="Metadata\Tmdb\TmdbImage.cs" />
+    <Compile Include="Metadata\Tmdb\TmdbMovie.cs" />
     <Compile Include="TitleEncodeInfo.cs" />
     <Compile Include="TVShowEncodeInfo.cs" />
     <Compile Include="SettingError.cs" />

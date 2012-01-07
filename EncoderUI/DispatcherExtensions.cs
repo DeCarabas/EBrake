@@ -10,9 +10,14 @@
             return dispatcher.BeginInvoke(a, null);
         }
 
-        public static void Invoke(this Dispatcher dispatcher, Action a)
+        public static DispatcherOperation BeginInvoke(this Dispatcher dispatcher, Action a, DispatcherPriority priority)
         {
-            dispatcher.Invoke(a, null);
-        }    
+            return dispatcher.BeginInvoke(a, priority, null);
+        }
+
+        public static DispatcherOperation BeginInvoke<T1, T2>(this Dispatcher dispatcher, Action<T1, T2> a, T1 p1, T2 p2)
+        {
+            return dispatcher.BeginInvoke(a, new object[] { p1, p2 });
+        }
     }
 }

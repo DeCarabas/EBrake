@@ -107,7 +107,7 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Grid.RowSpan="5" Source="/EBrake;component/Popcorn.jpg" 
+                            <Image Grid.RowSpan="5" Source="{Binding Backdrop}" 
                                    HorizontalAlignment="Center" Stretch="UniformToFill" />
 
                             <Button Click="OnFixSettingsClicked" Style="{StaticResource SettingsWarningBar}" />
