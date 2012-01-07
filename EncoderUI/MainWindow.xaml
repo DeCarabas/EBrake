@@ -1,10 +1,9 @@
-﻿<Window x:Class="EBrake.MainWindow"
+﻿<Controls:MetroWindow x:Class="EBrake.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:behaviours="clr-namespace:MahApps.Metro.Behaviours;assembly=MahApps.Metro"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        xmlns:LocalControls="clr-namespace:EBrake.Controls"
         Title="EBrake" Height="550" Width="750">
 
     <Window.Resources>
@@ -26,39 +25,24 @@
             </Style.Triggers>
         </Style>        
         
-        <Style TargetType="Button" x:Key="DownloadButton" BasedOn="{StaticResource MetroCircleButtonStyle}">
+        <Style TargetType="Controls:AppBarButton" x:Key="DownloadButton">
             <Setter Property="Margin" Value="5" />
             <Setter Property="Width" Value="55" />
             <Setter Property="Height" Value="55" />
             <Setter Property="IsEnabled" Value="false" />
             <Setter Property="ToolTip" Value="Start Encoding" />
-            <Setter Property="ContentTemplate">
-                <Setter.Value>
-                    <DataTemplate>
-                        <Rectangle Width="20" Height="20" Fill="{StaticResource appbar_download_disabled}" />
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Content" Value="Start" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="MetroImageSource" Value="{StaticResource appbar_download_disabled_icon}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding CanStartEncoding}" Value="True">
                     <Setter Property="IsEnabled" Value="true" />
-                    <Setter Property="ContentTemplate">
-                        <Setter.Value>
-                            <DataTemplate>
-                                <Rectangle Width="20" Height="20" Fill="{StaticResource appbar_download}" />
-                            </DataTemplate>
-                        </Setter.Value>
-                    </Setter>
+                    <Setter Property="MetroImageSource" Value="{StaticResource appbar_download_icon}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsEncoding}" Value="True">
                     <Setter Property="ToolTip" Value="Cancel Encoding" />
-                    <Setter Property="ContentTemplate">
-                        <Setter.Value>
-                            <DataTemplate>
-                                <Rectangle Width="20" Height="20" Fill="{StaticResource appbar_close}" />
-                            </DataTemplate>
-                        </Setter.Value>
-                    </Setter>                    
+                    <Setter Property="MetroImageSource" Value="{StaticResource appbar_close_icon}" />
+                    <Setter Property="Content" Value="Cancel" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -75,304 +59,289 @@
         </Style>
     </Window.Resources>
 
-    <i:Interaction.Behaviors>
-        <behaviours:BorderlessWindowBehavior ResizeWithGrip="True" />
-    </i:Interaction.Behaviors>
-
     <Grid>
-        <Grid Height="54" VerticalAlignment="Top" MouseDown="OnWindowTopMouseDown">
-            <Grid.Background>
-                <SolidColorBrush Color="White" />
-            </Grid.Background>
-            <LocalControls:WindowButtons HorizontalAlignment="Right" VerticalAlignment="Top" Panel.ZIndex="1" 
-                                         ClosingWindow="OnClosingWindow" />
-        </Grid>
+        <TabControl x:Name="Tabs" Margin="0,10,0,0">
+            <TabItem Header="movie" DataContext="{Binding Path=MovieEncodeInfo}">
+                <Controls:MetroContentControl>
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-        <Controls:MetroContentControl>
-            <TabControl x:Name="Tabs">
-                <TabItem Header="movie" DataContext="{Binding Path=MovieEncodeInfo}">
-                    <Controls:MetroContentControl>
-                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+                        <Image Grid.RowSpan="5" Source="{Binding Backdrop}" 
+                                HorizontalAlignment="Center" Stretch="UniformToFill" />
 
-                            <Image Grid.RowSpan="5" Source="{Binding Backdrop}" 
-                                   HorizontalAlignment="Center" Stretch="UniformToFill" />
+                        <Button Click="OnFixSettingsClicked" Style="{StaticResource SettingsWarningBar}" />
 
-                            <Button Click="OnFixSettingsClicked" Style="{StaticResource SettingsWarningBar}" />
-
-                            <!-- 
-                                This TextBox isbound with UpdateSourceTrigger=PropertyChanged, so that the 
-                                enable/disable of the "start" button happens naturally. (There may not be a 
-                                focus-change event to force the binding.)
+                        <!-- 
+                            This TextBox isbound with UpdateSourceTrigger=PropertyChanged, so that the 
+                            enable/disable of the "start" button happens naturally. (There may not be a 
+                            focus-change event to force the binding.)
                             
                             
-                            -->
-                            <TextBox Grid.Row="1" Text="{Binding Path=MovieTitle, UpdateSourceTrigger=PropertyChanged}" 
-                                     Margin="10" TextAlignment="Center" FontSize="24" Opacity="0.9"  Name="MovieTitleBox"
-                                     PreviewKeyDown="OnMovieTitleKeyDown" LostKeyboardFocus="OnMovieTitleLostFocus" />
-                            <Popup PlacementTarget="{Binding ElementName=MovieTitleBox}" Placement="Bottom" 
-                                   Width="{Binding ElementName=MovieTitleBox, Path=ActualWidth}"
-                                   x:Name="MovieSearchResults">
-                                <ListBox ItemsSource="{Binding PotentialMatches}" x:Name="PotentialMovieTitleList">
-                                    <ListBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock FontSize="24" Opacity="0.9" TextAlignment="Center"
-                                                       MouseDown="OnMovieSearchResultClicked">
-                                                <TextBlock.Text>
-                                                    <MultiBinding StringFormat="{}{0} {1}">
-                                                        <Binding Path="Name" />
-                                                        <Binding Path="DisplayReleaseYear" />
-                                                    </MultiBinding>
-                                                </TextBlock.Text>
-                                            </TextBlock>
-                                        </DataTemplate>
-                                    </ListBox.ItemTemplate>
-                                </ListBox>
-                            </Popup>
-                            <TextBlock Grid.Row="2" Style="{StaticResource entryLabel}" Text="Movie Title" />
-
-                            <TextBox Grid.Row="3" Text="{Binding Path=MovieYear}" Margin="10" TextAlignment="Center" 
-                                     FontSize="24" Opacity="0.9" />
-                            <TextBlock Grid.Row="4" Style="{StaticResource entryLabel}" Text="Movie Year" />
-
-                            <ProgressBar Grid.Row="5" Value="{Binding Path=PercentComplete}" />
-                            <TextBlock Grid.Row="6" HorizontalAlignment="Center" Text="{Binding Path=ETA}" />
-
-                            <StackPanel Grid.Row="7" Grid.Column="1">
-                                <Button Style="{StaticResource DownloadButton}" Click="OnMovieEncodeButtonClicked" />
-                            </StackPanel>
-                        </Grid>
-                    </Controls:MetroContentControl>
-                </TabItem>
-                <TabItem Header="tv show" DataContext="{Binding Path=TVShowEncodeInfo}">
-                    <Controls:MetroContentControl>
-                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.IsSharedSizeScope="True">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-
-                            <Image Grid.RowSpan="6" Source="/EBrake;component/Static.jpg" 
-                                   HorizontalAlignment="Center"  Stretch="UniformToFill" />
-
-                            <Button Click="OnFixSettingsClicked" Style="{StaticResource SettingsWarningBar}" />
-
-                            <!-- 
-                                This TextBox isbound with UpdateSourceTrigger=PropertyChanged, so that the 
-                                enable/disable of the "start" button happens naturally. (There may not be a 
-                                focus-change event to force the binding.)
-                            -->
-                            <TextBox Grid.Row="1" Text="{Binding Path=Series, UpdateSourceTrigger=PropertyChanged}" 
-                                     Margin="10" TextAlignment="Center" FontSize="24" Opacity="0.9" />
-                            <TextBlock Grid.Row="2" Style="{StaticResource entryLabel}" Text="Series" />
-
-                            <Grid Grid.Row="3" Background="Gray" TextBlock.FontSize="14" TextBlock.Foreground="White" 
-                                  HorizontalAlignment="Stretch" Margin="10,0,10,0" Opacity="0.9" Focusable="False" >
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto" SharedSizeGroup="Index" />
-                                    <ColumnDefinition Width="auto" SharedSizeGroup="Length" />
-                                    <ColumnDefinition Width="auto" SharedSizeGroup="Season" />
-                                    <ColumnDefinition Width="auto" SharedSizeGroup="Episode" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="auto" SharedSizeGroup="Preview" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Padding="5" Text="Index" />
-                                <TextBlock Padding="5" Grid.Column="1" Text="Length" />
-                                <TextBlock Padding="5" Grid.Column="2" Text="Season" />
-                                <TextBlock Padding="5" Grid.Column="3" Text="Episode" />
-                                <TextBlock Padding="5" Grid.Column="4" Text="Title" />
-                            </Grid>
-                            <ItemsControl Grid.Row="4" Height="150" Margin="10,0,10,0" 
-                                          ItemsSource="{Binding Episodes}" 
-                                          HorizontalContentAlignment="Stretch" x:Name="EpisodeList"  
-                                          KeyboardNavigation.TabNavigation="Continue"
-                                          KeyboardNavigation.DirectionalNavigation="Contained"                                     
-                                          Keyboard.PreviewKeyDown="OnEpisodeListKeyDown"
-                                          Background="White"
-                                          Opacity="0.9"
-                                          Focusable="False"
-                                          >
-                                <ItemsControl.Template>
-                                    <ControlTemplate>
-                                        <Border Background="{TemplateBinding Background}">
-                                            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                                <ItemsPresenter />
-                                            </ScrollViewer>
-                                        </Border>
-                                    </ControlTemplate>
-                                </ItemsControl.Template>
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel IsItemsHost="true" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
+                        -->
+                        <TextBox Grid.Row="1" Text="{Binding Path=MovieTitle, UpdateSourceTrigger=PropertyChanged}" 
+                                    Margin="10" TextAlignment="Center" FontSize="24" Opacity="0.9"  Name="MovieTitleBox"
+                                    PreviewKeyDown="OnMovieTitleKeyDown" LostKeyboardFocus="OnMovieTitleLostFocus" />
+                        <Popup PlacementTarget="{Binding ElementName=MovieTitleBox}" Placement="Bottom" 
+                                Width="{Binding ElementName=MovieTitleBox, Path=ActualWidth}"
+                                x:Name="MovieSearchResults">
+                            <ListBox ItemsSource="{Binding PotentialMatches}" x:Name="PotentialMovieTitleList">
+                                <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid HorizontalAlignment="Stretch">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition SharedSizeGroup="Index" />
-                                                <ColumnDefinition SharedSizeGroup="Length" />
-                                                <ColumnDefinition SharedSizeGroup="Season" />
-                                                <ColumnDefinition SharedSizeGroup="Episode" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="auto" SharedSizeGroup="Preview" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <TextBlock Text="{Binding Index}" VerticalAlignment="Center" Margin="3" />
-                                            <TextBlock Grid.Column="1" Text="{Binding Length}" 
-                                                       VerticalAlignment="Center" Margin="3" 
-                                                       KeyboardNavigation.DirectionalNavigation="Continue"
-                                                       />
-                                            <TextBox Grid.Column="2" Text="{Binding Season}" 
-                                                     HorizontalAlignment="Stretch" 
-                                                     KeyboardNavigation.DirectionalNavigation="Continue"                                                     
-                                                     />
-                                            <TextBox Grid.Column="3" Text="{Binding Episode}" 
-                                                     HorizontalAlignment="Stretch" 
-                                                     KeyboardNavigation.DirectionalNavigation="Continue"
-                                                     />
-                                            <TextBox Grid.Column="4" Text="{Binding EpisodeTitle}" 
-                                                     HorizontalAlignment="Stretch"  
-                                                     KeyboardNavigation.DirectionalNavigation="Continue" 
-                                                     />
-                                            
-                                            <Button Grid.Column="5" Content="Preview" Click="OnPreviewShowClicked" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-
-                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="4"  
-                                  Style="{StaticResource VisibleWhenScanning}">
-                                <Rectangle VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
-                                           Fill="{StaticResource DisabledControlBrush}" Opacity="0.5"
-                                           Margin="10,0,10,0"/>
-                                <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch">
-                                    <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                                        <TextBlock Text="Scanning Disc..." TextAlignment="Center" FontSize="14" 
-                                                   Foreground="White">
-                                            <TextBlock.Effect>
-                                                <DropShadowEffect ShadowDepth="0" BlurRadius="10" />
-                                            </TextBlock.Effect>
+                                        <TextBlock FontSize="24" Opacity="0.9" TextAlignment="Center"
+                                                    MouseDown="OnMovieSearchResultClicked">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0} {1}">
+                                                    <Binding Path="Name" />
+                                                    <Binding Path="DisplayReleaseYear" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
                                         </TextBlock>
-                                        <ProgressBar VerticalAlignment="Center" HorizontalAlignment="Stretch" 
-                                                    Margin="20" IsIndeterminate="True" />
-                                        <ContentPresenter />
-                                    </StackPanel>
-                                </Grid>
-                            </Grid>
-                            
-                            <TextBlock Grid.Row="5" Style="{StaticResource entryLabel}" Text="Episodes" />
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Popup>
+                        <TextBlock Grid.Row="2" Style="{StaticResource entryLabel}" Text="Movie Title" />
 
-                            <ProgressBar Grid.Row="6" Value="{Binding TotalPercentComplete}" />
-                            <ProgressBar Grid.Row="7" Value="{Binding PercentComplete}" />
-                            <TextBlock Grid.Row="8" Text="{Binding ETA}" HorizontalAlignment="Center" />
+                        <TextBox Grid.Row="3" Text="{Binding Path=MovieYear}" Margin="10" TextAlignment="Center" 
+                                    FontSize="24" Opacity="0.9" />
+                        <TextBlock Grid.Row="4" Style="{StaticResource entryLabel}" Text="Movie Year" />
 
-                            <Button Grid.Row="9" Style="{StaticResource DownloadButton}" 
-                                    Click="OnTVEncodeButtonClicked" />                            
-                        </Grid>
-                    </Controls:MetroContentControl>
-                </TabItem>
-                <TabItem Header="settings" x:Name="SettingsTab">
-                    <Controls:MetroContentControl>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
+                        <ProgressBar Grid.Row="5" Value="{Binding Path=PercentComplete}" />
+                        <TextBlock Grid.Row="6" HorizontalAlignment="Center" Text="{Binding Path=ETA}" />
+
+                        <Controls:AppBarButton Grid.Row="7" Grid.Column="1" Style="{StaticResource DownloadButton}" 
+                                               Click="OnMovieEncodeButtonClicked" />
+                    </Grid>
+                </Controls:MetroContentControl>
+            </TabItem>
+            <TabItem Header="tv show" DataContext="{Binding Path=TVShowEncodeInfo}">
+                <Controls:MetroContentControl>
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.IsSharedSizeScope="True">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Image Grid.RowSpan="6" Source="/EBrake;component/Static.jpg" 
+                                HorizontalAlignment="Center"  Stretch="UniformToFill" />
+
+                        <Button Click="OnFixSettingsClicked" Style="{StaticResource SettingsWarningBar}" />
+
+                        <!-- 
+                            This TextBox isbound with UpdateSourceTrigger=PropertyChanged, so that the 
+                            enable/disable of the "start" button happens naturally. (There may not be a 
+                            focus-change event to force the binding.)
+                        -->
+                        <TextBox Grid.Row="1" Text="{Binding Path=Series, UpdateSourceTrigger=PropertyChanged}" 
+                                    Margin="10" TextAlignment="Center" FontSize="24" Opacity="0.9" />
+                        <TextBlock Grid.Row="2" Style="{StaticResource entryLabel}" Text="Series" />
+
+                        <Grid Grid.Row="3" Background="Gray" TextBlock.FontSize="14" TextBlock.Foreground="White" 
+                                HorizontalAlignment="Stretch" Margin="10,0,10,0" Opacity="0.9" Focusable="False" >
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" SharedSizeGroup="Index" />
+                                <ColumnDefinition Width="auto" SharedSizeGroup="Length" />
+                                <ColumnDefinition Width="auto" SharedSizeGroup="Season" />
+                                <ColumnDefinition Width="auto" SharedSizeGroup="Episode" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="auto" SharedSizeGroup="Preview" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Grid.RowSpan="6" Grid.ColumnSpan="2" Source="/EBrake;component/HardDrive.jpg" 
-                                       HorizontalAlignment="Center"  Stretch="UniformToFill" />
-
-                            <TextBlock Grid.Row="1" Style="{StaticResource settingLabel}" Text="Source Drive" />
-                            <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                                      ItemsSource="{Binding Path=OpticalDrives}" SelectedItem="{Binding Path=SourceDrive}"
-                                      Margin="10" x:Name="SourceDriveBox" >
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <WrapPanel>
-                                            <TextBlock Text="{Binding RootDirectory}" />
-                                            <TextBlock Text="{Binding VolumeLabel}" Margin="10,0,0,0" />
-                                        </WrapPanel>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-
-                            <!-- 
-                                Both of these TextBoxes are bound with UpdateSourceTrigger=PropertyChanged, so that 
-                                when you have focus and you switch tabs back to tv show or movie or something the 
-                                settings properties are already up to date for the trigger that saves the settings.
-                            -->
-                            <TextBlock Grid.Row="2" Style="{StaticResource settingLabel}" Text="Movie Output Path" />
-                            <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="auto" />
-                                </Grid.ColumnDefinitions>
-                                <TextBox VerticalAlignment="Center" Margin="10,10,2,10" 
-                                         Text="{Binding Path=MovieEncodeInfo.OutputPath, UpdateSourceTrigger=PropertyChanged}" 
-                                     />
-                                <Button Grid.Column="1" Margin="2,10,10,10" VerticalAlignment="Center" 
-                                        Tag="{Binding Path=MovieEncodeInfo}" Click="OnBrowseClicked" >
-                                    Browse...
-                                </Button>
-                            </Grid>
-
-
-                            <TextBlock Grid.Row="3" Style="{StaticResource settingLabel}" Text="TV Show Output Path" />
-                            <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="auto" />
-                                </Grid.ColumnDefinitions>
-                                <TextBox VerticalAlignment="Center" Margin="10,10,2,10"
-                                     Text="{Binding Path=TVShowEncodeInfo.OutputPath, UpdateSourceTrigger=PropertyChanged}" 
-                                     />
-                                <Button Grid.Column="1" Margin="2,10,10,10" VerticalAlignment="Center" 
-                                            Tag="{Binding Path=TVShowEncodeInfo}" Click="OnBrowseClicked">
-                                    Browse...
-                                </Button>
-                            </Grid>
-                        
-                        <Button Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" Margin="0,20,10,0" 
-                                    Click="OnAboutClicked">About EBrake</Button>
+                            <TextBlock Padding="5" Text="Index" />
+                            <TextBlock Padding="5" Grid.Column="1" Text="Length" />
+                            <TextBlock Padding="5" Grid.Column="2" Text="Season" />
+                            <TextBlock Padding="5" Grid.Column="3" Text="Episode" />
+                            <TextBlock Padding="5" Grid.Column="4" Text="Title" />
                         </Grid>
-                    </Controls:MetroContentControl>
-                </TabItem>
-            </TabControl>
-        </Controls:MetroContentControl>
+                        <ItemsControl Grid.Row="4" Height="150" Margin="10,0,10,0" 
+                                        ItemsSource="{Binding Episodes}" 
+                                        HorizontalContentAlignment="Stretch" x:Name="EpisodeList"  
+                                        KeyboardNavigation.TabNavigation="Continue"
+                                        KeyboardNavigation.DirectionalNavigation="Contained"                                     
+                                        Keyboard.PreviewKeyDown="OnEpisodeListKeyDown"
+                                        Background="White"
+                                        Opacity="0.9"
+                                        Focusable="False"
+                                        >
+                            <ItemsControl.Template>
+                                <ControlTemplate>
+                                    <Border Background="{TemplateBinding Background}">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                            <ItemsPresenter />
+                                        </ScrollViewer>
+                                    </Border>
+                                </ControlTemplate>
+                            </ItemsControl.Template>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel IsItemsHost="true" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid HorizontalAlignment="Stretch">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition SharedSizeGroup="Index" />
+                                            <ColumnDefinition SharedSizeGroup="Length" />
+                                            <ColumnDefinition SharedSizeGroup="Season" />
+                                            <ColumnDefinition SharedSizeGroup="Episode" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="auto" SharedSizeGroup="Preview" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="{Binding Index}" VerticalAlignment="Center" Margin="3" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Length}" 
+                                                    VerticalAlignment="Center" Margin="3" 
+                                                    KeyboardNavigation.DirectionalNavigation="Continue"
+                                                    />
+                                        <TextBox Grid.Column="2" Text="{Binding Season}" 
+                                                    HorizontalAlignment="Stretch" 
+                                                    KeyboardNavigation.DirectionalNavigation="Continue"                                                     
+                                                    />
+                                        <TextBox Grid.Column="3" Text="{Binding Episode}" 
+                                                    HorizontalAlignment="Stretch" 
+                                                    KeyboardNavigation.DirectionalNavigation="Continue"
+                                                    />
+                                        <TextBox Grid.Column="4" Text="{Binding EpisodeTitle}" 
+                                                    HorizontalAlignment="Stretch"  
+                                                    KeyboardNavigation.DirectionalNavigation="Continue" 
+                                                    />
+                                            
+                                        <Button Grid.Column="5" Content="Preview" Click="OnPreviewShowClicked" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="4"  
+                                Style="{StaticResource VisibleWhenScanning}">
+                            <Rectangle VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
+                                        Fill="{StaticResource DisabledControlBrush}" Opacity="0.5"
+                                        Margin="10,0,10,0"/>
+                            <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                                <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <TextBlock Text="Scanning Disc..." TextAlignment="Center" FontSize="14" 
+                                                Foreground="White">
+                                        <TextBlock.Effect>
+                                            <DropShadowEffect ShadowDepth="0" BlurRadius="10" />
+                                        </TextBlock.Effect>
+                                    </TextBlock>
+                                    <ProgressBar VerticalAlignment="Center" HorizontalAlignment="Stretch" 
+                                                Margin="20" IsIndeterminate="True" />
+                                    <ContentPresenter />
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                            
+                        <TextBlock Grid.Row="5" Style="{StaticResource entryLabel}" Text="Episodes" />
+
+                        <ProgressBar Grid.Row="6" Value="{Binding TotalPercentComplete}" />
+                        <ProgressBar Grid.Row="7" Value="{Binding PercentComplete}" />
+                        <TextBlock Grid.Row="8" Text="{Binding ETA}" HorizontalAlignment="Center" />
+
+                        <Controls:AppBarButton Grid.Row="9" Style="{StaticResource DownloadButton}" 
+                                Click="OnTVEncodeButtonClicked" />                            
+                    </Grid>
+                </Controls:MetroContentControl>
+            </TabItem>
+            <TabItem Header="settings" x:Name="SettingsTab">
+                <Controls:MetroContentControl>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Image Grid.RowSpan="6" Grid.ColumnSpan="2" Source="/EBrake;component/HardDrive.jpg" 
+                                    HorizontalAlignment="Center"  Stretch="UniformToFill" />
+
+                        <TextBlock Grid.Row="1" Style="{StaticResource settingLabel}" Text="Source Drive" />
+                        <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                                    ItemsSource="{Binding Path=OpticalDrives}" SelectedItem="{Binding Path=SourceDrive}"
+                                    Margin="10" x:Name="SourceDriveBox" >
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <WrapPanel>
+                                        <TextBlock Text="{Binding RootDirectory}" />
+                                        <TextBlock Text="{Binding VolumeLabel}" Margin="10,0,0,0" />
+                                    </WrapPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <!-- 
+                            Both of these TextBoxes are bound with UpdateSourceTrigger=PropertyChanged, so that 
+                            when you have focus and you switch tabs back to tv show or movie or something the 
+                            settings properties are already up to date for the trigger that saves the settings.
+                        -->
+                        <TextBlock Grid.Row="2" Style="{StaticResource settingLabel}" Text="Movie Output Path" />
+                        <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox VerticalAlignment="Center" Margin="10,10,2,10" 
+                                        Text="{Binding Path=MovieEncodeInfo.OutputPath, UpdateSourceTrigger=PropertyChanged}" 
+                                    />
+                            <Button Grid.Column="1" Margin="2,10,10,10" VerticalAlignment="Center" 
+                                    Tag="{Binding Path=MovieEncodeInfo}" Click="OnBrowseClicked" >
+                                Browse...
+                            </Button>
+                        </Grid>
+
+
+                        <TextBlock Grid.Row="3" Style="{StaticResource settingLabel}" Text="TV Show Output Path" />
+                        <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox VerticalAlignment="Center" Margin="10,10,2,10"
+                                    Text="{Binding Path=TVShowEncodeInfo.OutputPath, UpdateSourceTrigger=PropertyChanged}" 
+                                    />
+                            <Button Grid.Column="1" Margin="2,10,10,10" VerticalAlignment="Center" 
+                                        Tag="{Binding Path=TVShowEncodeInfo}" Click="OnBrowseClicked">
+                                Browse...
+                            </Button>
+                        </Grid>
+                        
+                    <Button Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" Margin="0,20,10,0" 
+                                Click="OnAboutClicked">About EBrake</Button>
+                    </Grid>
+                </Controls:MetroContentControl>
+            </TabItem>
+        </TabControl>
     </Grid>
-</Window>
+</Controls:MetroWindow>
