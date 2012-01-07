@@ -135,6 +135,12 @@
             return fileName;
         }
 
+        protected static string GetStandardCommandLine(string input, string output)
+        {
+            return String.Format(
+                "-o \"{0}\" -i \"{1}\" -Z \"High Profile\" --native-language eng ", output, input);
+        }
+
         protected virtual void Notify(string property)
         {
             if (PropertyChanged != null) { PropertyChanged(this, new PropertyChangedEventArgs(property)); }

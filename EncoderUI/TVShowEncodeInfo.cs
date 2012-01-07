@@ -91,11 +91,8 @@
 
                 string outputFile = Path.Combine(outputDirectory, EscapeFileName(outputFileName));                
 
-                string commandLine = String.Format(
-                    "-t {0} -o \"{1}\" -i \"{2}\" -m -e x264 --native-language eng --decomb --strict-anamorphic -q 20",
-                    titleInfo.TitleNumber,
-                    outputFile,
-                    source);
+                string commandLine = String.Format("-t {0} ", titleInfo.TitleNumber) + 
+                    GetStandardCommandLine(source, outputFile);
 
                 encodingQueue.Add(new Job 
                 {

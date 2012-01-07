@@ -41,16 +41,15 @@
         protected override void AddEncodingJobs(List<Job> encodingQueue)
         {
             string baseName = MovieTitle.Trim();
-            if (!String.IsNullOrWhiteSpace(MovieYear)) { baseName += String.Format("({0})", MovieYear.Trim()); }
-            baseName += ".m4v";
+            if (!String.IsNullOrWhiteSpace(MovieYear)) { baseName += String.Format(" ({0})", MovieYear.Trim()); }
 
-            string outputFileName = EscapeFileName(baseName);            
-            string outputFile = Path.Combine(OutputPath, outputFileName);
+            string movieDirectory = Path.Combine(OutputPath, EscapeFileName(baseName));
+            if (!Directory.Exists(movieDirectory)) { Directory.CreateDirectory(movieDirectory); }
+            
+            string outputFile = Path.Combine(movieDirectory, EscapeFileName(baseName) + ".m4v");
 
-            string commandLine = String.Format(
-                "--main-feature -o \"{0}\" -i \"{1}\" -m -e x264 --native-language eng --decomb --strict-anamorphic -q 20",
-                outputFile,
-                Path.Combine(SourceDrive.RootDirectory.FullName, "VIDEO_TS"));
+            string commandLine = "--main-feature " + 
+                GetStandardCommandLine(Path.Combine(SourceDrive.RootDirectory.FullName, "VIDEO_TS"), outputFile);
 
             encodingQueue.Add(new Job
             {
