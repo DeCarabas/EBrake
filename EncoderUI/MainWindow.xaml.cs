@@ -240,13 +240,11 @@
             OnEncodeButtonClicked(MovieEncodeInfo);
         }
 
-        void OnMovieSearchResultsSelectionChanged(object sender, SelectionChangedEventArgs e)
+        void OnMovieSearchResultClicked(object sender, MouseButtonEventArgs e)
         {
-            if (PotentialMovieTitleList.IsFocused)
-            {
-                var movie = (TmdbMovie)PotentialMovieTitleList.SelectedItem;
-                MovieEncodeInfo.SelectMetadata(movie);
-            }
+            var movie = (TmdbMovie)((FrameworkElement)e.OriginalSource).DataContext;
+            MovieEncodeInfo.SelectMetadata(movie);
+            MovieSearchResults.IsOpen = false;
         }
 
         void OnMovieTitleKeyDown(object sender, KeyEventArgs e)
@@ -310,7 +308,7 @@
         }
 
         void OnMovieTitleLostFocus(object sender, RoutedEventArgs e)
-        {
+        {            
             MovieSearchResults.IsOpen = false;
         }
 

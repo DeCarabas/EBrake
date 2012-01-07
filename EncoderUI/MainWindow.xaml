@@ -125,11 +125,11 @@
                             <Popup PlacementTarget="{Binding ElementName=MovieTitleBox}" Placement="Bottom" 
                                    Width="{Binding ElementName=MovieTitleBox, Path=ActualWidth}"
                                    x:Name="MovieSearchResults">
-                                <ListBox ItemsSource="{Binding PotentialMatches}" x:Name="PotentialMovieTitleList"
-                                         SelectionChanged="OnMovieSearchResultsSelectionChanged">
+                                <ListBox ItemsSource="{Binding PotentialMatches}" x:Name="PotentialMovieTitleList">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <TextBlock FontSize="24" Opacity="0.9" TextAlignment="Center">
+                                            <TextBlock FontSize="24" Opacity="0.9" TextAlignment="Center"
+                                                       MouseDown="OnMovieSearchResultClicked">
                                                 <TextBlock.Text>
                                                     <MultiBinding StringFormat="{}{0} {1}">
                                                         <Binding Path="Name" />
