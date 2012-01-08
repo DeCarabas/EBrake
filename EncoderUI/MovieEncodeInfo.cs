@@ -2,12 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.IO;
     using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using System.Windows.Threading;
     using EBrake.Metadata.Tmdb;
     using HandBrake.ApplicationServices.Model;
     using HandBrake.ApplicationServices.Services;
@@ -19,7 +15,6 @@
 
         string backdrop = stockBackdrop;
         string movieTitle;
-        string movieYear;
 
         public MovieEncodeInfo(MainWindow mainWindow, Queue encodingQueue)
             : base(mainWindow, encodingQueue)
@@ -90,11 +85,9 @@
         }
 
         public void SelectMetadata(TmdbMovie movie)
-        {
-            MovieTitle = movie.DisplayName;
-            
+        {                        
             TmdbImage image = null;
-            if (movie.Backdrops != null)
+            if (movie != null && movie.Backdrops != null)
             {
                 image = movie.Backdrops.OrderByDescending(i => i.Image.Width).FirstOrDefault();
             }            

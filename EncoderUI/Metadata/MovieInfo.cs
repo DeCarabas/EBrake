@@ -1,4 +1,4 @@
-﻿namespace EBrake
+﻿namespace EBrake.Metadata
 {
     using System;
     using System.Collections.Generic;

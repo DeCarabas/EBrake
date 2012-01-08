@@ -8,19 +8,19 @@
     using System.IO;
     using System.Linq;
     using System.Runtime.InteropServices;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Interop;
     using EBrake.Interop;
+    using EBrake.Metadata;
     using EBrake.Metadata.Tmdb;
     using HandBrake.ApplicationServices;
     using HandBrake.ApplicationServices.Services;
     using MahApps.Metro.Controls;
     using Newtonsoft.Json;
-    using System.Threading;
-    using System.Collections.Specialized;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -382,10 +382,7 @@
 
         private void TitleBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (TitleBox.SelectedItem != null)
-            {
-                MovieEncodeInfo.SelectMetadata((TmdbMovie)TitleBox.SelectedItem);
-            }
+            MovieEncodeInfo.SelectMetadata((TmdbMovie)TitleBox.SelectedItem);
         }
     }
 }

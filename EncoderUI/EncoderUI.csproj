@@ -131,6 +131,8 @@
     </Compile>
     <Compile Include="Controls\FlowDocumentViewer.cs" />
     <Compile Include="InfoError.cs" />
+    <Compile Include="Metadata\Tvdb\TVDBSeries.cs" />
+    <Compile Include="Metadata\TVInfo.cs" />
     <Compile Include="Metadata\MovieInfo.cs" />
     <Compile Include="Metadata\Tmdb\TmdbImageInfo.cs" />
     <Compile Include="Metadata\Tmdb\TmdbImage.cs" />
@@ -212,8 +214,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
