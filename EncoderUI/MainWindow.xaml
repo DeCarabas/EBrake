@@ -65,10 +65,11 @@
             <Setter Property="Margin" Value="10" />
             <Setter Property="MinimumPopulateDelay" Value="200" />
             <Setter Property="Opacity" Value="0.9" />
+            <Setter Property="IsTextCompletionEnabled" Value="True" />
             <Setter Property="TextBoxStyle">
                 <Setter.Value>
                     <Style TargetType="TextBox">
-                        <Setter Property="TextAlignment" Value="Center" />
+                        <Setter Property="TextAlignment" Value="Left" />
                     </Style>
                 </Setter.Value>
             </Setter>
@@ -99,18 +100,26 @@
                             enable/disable of the "start" button happens naturally. (There may not be a 
                             focus-change event to force the binding.)
                         -->
-                        <Toolbox:AutoCompleteBox Grid.Row="1" Style="{StaticResource MetadataBox}"
+                        <Grid Grid.Row="1" Margin="20,0,20,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Style="{StaticResource entryLabel}" Text="Title" VerticalAlignment="Center" 
+                                       Margin="10,0,0,0"/>
+                            <Toolbox:AutoCompleteBox Grid.Column="1" Style="{StaticResource MetadataBox}"                                                  
                                                  Text="{Binding Path=MovieTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                                  Name="TitleBox" Populating="AutoCompleteBox_Populating"
                                                  ValueMemberBinding="{Binding Path=DisplayName}"
                                                  SelectionChanged="TitleBox_SelectionChanged">
-                            <Toolbox:AutoCompleteBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock FontSize="24" Opacity="0.9" Text="{Binding Path=DisplayName}" />
-                                </DataTemplate>
-                            </Toolbox:AutoCompleteBox.ItemTemplate>
-                        </Toolbox:AutoCompleteBox>
-                        <TextBlock Grid.Row="2" Style="{StaticResource entryLabel}" Text="Movie Title" />
+                                <Toolbox:AutoCompleteBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock FontSize="24" Opacity="0.9" Text="{Binding Path=DisplayName}" />
+                                    </DataTemplate>
+                                </Toolbox:AutoCompleteBox.ItemTemplate>
+                            </Toolbox:AutoCompleteBox>
+                        </Grid>
+
 
                         <ProgressBar Grid.Row="3" Value="{Binding Path=PercentComplete}" />
                         <TextBlock Grid.Row="4" HorizontalAlignment="Center" Text="{Binding Path=ETA}" />
