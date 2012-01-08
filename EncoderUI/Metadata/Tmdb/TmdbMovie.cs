@@ -85,13 +85,17 @@
         [JsonProperty("version")]
         public int Version { get; set; }
 
-        public string DisplayReleaseYear
+        public string DisplayName
         {
             get
             {
                 DateTime release;
-                if (DateTime.TryParse(Released, out release)) { return String.Format("({0})", release.Year); }
-                return String.Empty;
+                if (DateTime.TryParse(Released, out release)) 
+                { 
+                    return String.Format("{0} ({1})", Name, release.Year); 
+                }
+
+                return Name;
             }
         }
     }

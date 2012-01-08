@@ -2,18 +2,12 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.IO;
-    using System.Windows.Threading;
-    using HandBrake.ApplicationServices;
-    using HandBrake.ApplicationServices.Model;
-    using HandBrake.ApplicationServices.Services;
-    using System.Threading.Tasks;
-    using System.Threading;
     using System.Net;
-    using Newtonsoft.Json;
-    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
     using EBrake.Metadata.Tmdb;
+    using Newtonsoft.Json;
 
     public static class MovieInfo
     {

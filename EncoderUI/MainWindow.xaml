@@ -4,6 +4,7 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:Toolbox="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
         Title="EBrake" Height="550" Width="750">
 
     <Window.Resources>
@@ -31,7 +32,7 @@
             <Setter Property="Height" Value="55" />
             <Setter Property="IsEnabled" Value="false" />
             <Setter Property="ToolTip" Value="Start Encoding" />
-            <Setter Property="Content" Value="Start" />
+            <Setter Property="Content" Value="start" />
             <Setter Property="Foreground" Value="Black" />
             <Setter Property="MetroImageSource" Value="{StaticResource appbar_download_disabled_icon}" />
             <Style.Triggers>
@@ -42,7 +43,7 @@
                 <DataTrigger Binding="{Binding IsEncoding}" Value="True">
                     <Setter Property="ToolTip" Value="Cancel Encoding" />
                     <Setter Property="MetroImageSource" Value="{StaticResource appbar_close_icon}" />
-                    <Setter Property="Content" Value="Cancel" />
+                    <Setter Property="Content" Value="cancel" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -56,6 +57,21 @@
                     <Setter Property="Visibility" Value="Hidden" />
                 </DataTrigger>
             </Style.Triggers>
+        </Style>
+        
+        <Style TargetType="Toolbox:AutoCompleteBox" x:Key="MetadataBox">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="Margin" Value="10" />
+            <Setter Property="MinimumPopulateDelay" Value="200" />
+            <Setter Property="Opacity" Value="0.9" />
+            <Setter Property="TextBoxStyle">
+                <Setter.Value>
+                    <Style TargetType="TextBox">
+                        <Setter Property="TextAlignment" Value="Center" />
+                    </Style>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
 
@@ -71,12 +87,7 @@
                             <RowDefinition Height="auto" />
                             <RowDefinition Height="auto" />
                             <RowDefinition Height="auto" />
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="auto" />
                         </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
 
                         <Image Grid.RowSpan="5" Source="{Binding Backdrop}" 
                                 HorizontalAlignment="Center" Stretch="UniformToFill" />
@@ -87,41 +98,24 @@
                             This TextBox isbound with UpdateSourceTrigger=PropertyChanged, so that the 
                             enable/disable of the "start" button happens naturally. (There may not be a 
                             focus-change event to force the binding.)
-                            
-                            
                         -->
-                        <TextBox Grid.Row="1" Text="{Binding Path=MovieTitle, UpdateSourceTrigger=PropertyChanged}" 
-                                    Margin="10" TextAlignment="Center" FontSize="24" Opacity="0.9"  Name="MovieTitleBox"
-                                    PreviewKeyDown="OnMovieTitleKeyDown" LostKeyboardFocus="OnMovieTitleLostFocus" />
-                        <Popup PlacementTarget="{Binding ElementName=MovieTitleBox}" Placement="Bottom" 
-                                Width="{Binding ElementName=MovieTitleBox, Path=ActualWidth}"
-                                x:Name="MovieSearchResults">
-                            <ListBox ItemsSource="{Binding PotentialMatches}" x:Name="PotentialMovieTitleList">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock FontSize="24" Opacity="0.9" TextAlignment="Center"
-                                                    MouseDown="OnMovieSearchResultClicked">
-                                            <TextBlock.Text>
-                                                <MultiBinding StringFormat="{}{0} {1}">
-                                                    <Binding Path="Name" />
-                                                    <Binding Path="DisplayReleaseYear" />
-                                                </MultiBinding>
-                                            </TextBlock.Text>
-                                        </TextBlock>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </Popup>
+                        <Toolbox:AutoCompleteBox Grid.Row="1" Style="{StaticResource MetadataBox}"
+                                                 Text="{Binding Path=MovieTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Name="TitleBox" Populating="AutoCompleteBox_Populating"
+                                                 ValueMemberBinding="{Binding Path=DisplayName}"
+                                                 SelectionChanged="TitleBox_SelectionChanged">
+                            <Toolbox:AutoCompleteBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock FontSize="24" Opacity="0.9" Text="{Binding Path=DisplayName}" />
+                                </DataTemplate>
+                            </Toolbox:AutoCompleteBox.ItemTemplate>
+                        </Toolbox:AutoCompleteBox>
                         <TextBlock Grid.Row="2" Style="{StaticResource entryLabel}" Text="Movie Title" />
 
-                        <TextBox Grid.Row="3" Text="{Binding Path=MovieYear}" Margin="10" TextAlignment="Center" 
-                                    FontSize="24" Opacity="0.9" />
-                        <TextBlock Grid.Row="4" Style="{StaticResource entryLabel}" Text="Movie Year" />
+                        <ProgressBar Grid.Row="3" Value="{Binding Path=PercentComplete}" />
+                        <TextBlock Grid.Row="4" HorizontalAlignment="Center" Text="{Binding Path=ETA}" />
 
-                        <ProgressBar Grid.Row="5" Value="{Binding Path=PercentComplete}" />
-                        <TextBlock Grid.Row="6" HorizontalAlignment="Center" Text="{Binding Path=ETA}" />
-
-                        <Controls:AppBarButton Grid.Row="7" Grid.Column="1" Style="{StaticResource DownloadButton}" 
+                        <Controls:AppBarButton Grid.Row="5" Style="{StaticResource DownloadButton}" 
                                                Click="OnMovieEncodeButtonClicked" />
                     </Grid>
                 </Controls:MetroContentControl>

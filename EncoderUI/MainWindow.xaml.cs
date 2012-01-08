@@ -19,6 +19,8 @@
     using HandBrake.ApplicationServices.Services;
     using MahApps.Metro.Controls;
     using Newtonsoft.Json;
+    using System.Threading;
+    using System.Collections.Specialized;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -58,6 +60,9 @@
             Closing += OnClosingWindow;
 
             LoadSettings();
+
+            // We frequently don't care about unobserved exceptions; swallow them silently.
+            TaskScheduler.UnobservedTaskException += (o, e) => { e.SetObserved(); };
         }
 
         public MovieEncodeInfo MovieEncodeInfo
@@ -180,10 +185,6 @@
                     }
                 }
             }
-            else if (e.PropertyName == "MovieTitle")
-            {
-                MovieSearchResults.IsOpen = true;
-            }
         }
 
         void OnEpisodeListKeyDown(object sender, KeyEventArgs e)
@@ -239,78 +240,6 @@
         void OnMovieEncodeButtonClicked(object sender, RoutedEventArgs e)
         {
             OnEncodeButtonClicked(MovieEncodeInfo);
-        }
-
-        void OnMovieSearchResultClicked(object sender, MouseButtonEventArgs e)
-        {
-            var movie = (TmdbMovie)((FrameworkElement)e.OriginalSource).DataContext;
-            MovieEncodeInfo.SelectMetadata(movie);
-            MovieSearchResults.IsOpen = false;
-        }
-
-        void OnMovieTitleKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Down)
-            {
-                if (!MovieSearchResults.IsOpen)
-                {
-                    MovieSearchResults.IsOpen = true;
-                }
-                else if (PotentialMovieTitleList.Items.Count > 0)
-                {
-                    if (PotentialMovieTitleList.SelectedIndex == -1)
-                    {
-                        PotentialMovieTitleList.SelectedIndex = 0;
-                    }
-                    else if (PotentialMovieTitleList.SelectedIndex < PotentialMovieTitleList.Items.Count - 1)
-                    {
-                        PotentialMovieTitleList.SelectedIndex++;
-                    }
-                }
-                e.Handled = true;
-            }
-            else if (e.Key == Key.Up)
-            {
-                if (!MovieSearchResults.IsOpen)
-                {
-                    MovieSearchResults.IsOpen = true;
-                }
-                else if (PotentialMovieTitleList.Items.Count > 0)
-                {
-                    if (PotentialMovieTitleList.SelectedIndex == -1)
-                    {
-                        PotentialMovieTitleList.SelectedIndex = 0;
-                    }
-                    else if (PotentialMovieTitleList.SelectedIndex > 0)
-                    {
-                        PotentialMovieTitleList.SelectedIndex--;
-                    }
-                }
-                e.Handled = true;
-            }
-            else if (e.Key == Key.Enter)
-            {
-                if (MovieSearchResults.IsOpen)
-                {
-                    if (PotentialMovieTitleList.SelectedItem != null)
-                    {
-                        var movie = (TmdbMovie)PotentialMovieTitleList.SelectedItem;
-                        MovieEncodeInfo.SelectMetadata(movie);
-                        MovieTitleBox.Select(MovieTitleBox.Text.Length, 0);
-                        MovieSearchResults.IsOpen = false;
-                    }
-                    e.Handled = true;
-                }
-            }
-            else if (e.Key == Key.Escape)
-            {
-                MovieSearchResults.IsOpen = false;
-            }
-        }
-
-        void OnMovieTitleLostFocus(object sender, RoutedEventArgs e)
-        {
-            MovieSearchResults.IsOpen = false;
         }
 
         void OnPreviewShowClicked(object sender, RoutedEventArgs e)
@@ -422,6 +351,41 @@
         {
             public string MovieOutputPath { get; set; }
             public string TVShowOutputPath { get; set; }
+        }
+
+        CancellationTokenSource movieQueryCancellation;
+
+        void AutoCompleteBox_Populating(object sender, PopulatingEventArgs e)
+        {
+            e.Cancel = true;
+
+            if (this.movieQueryCancellation != null) { this.movieQueryCancellation.Cancel(); }
+            this.movieQueryCancellation = new CancellationTokenSource();
+            CancellationToken token = this.movieQueryCancellation.Token;
+
+            MovieInfo.StartQueryMetadata(TitleBox.SearchText, token)
+                .ContinueWith(t => Dispatcher.BeginInvoke(UpdateMetadata, t, token), token);            
+        }
+
+        void UpdateMetadata(Task<TmdbMovie[]> task, CancellationToken token)
+        {
+            VerifyAccess();
+            //
+            // Last chance for cancellation... after this, we know we won't get canceled because cancellation can 
+            // only happen on this thread.
+            //
+            if (task.Status != TaskStatus.RanToCompletion || token.IsCancellationRequested) { return; }            
+
+            TitleBox.ItemsSource = task.Result;
+            TitleBox.PopulateComplete();
+        }
+
+        private void TitleBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (TitleBox.SelectedItem != null)
+            {
+                MovieEncodeInfo.SelectMetadata((TmdbMovie)TitleBox.SelectedItem);
+            }
         }
     }
 }
