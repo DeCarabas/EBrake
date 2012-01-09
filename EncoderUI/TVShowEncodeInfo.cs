@@ -6,6 +6,8 @@
     using System.Collections.Specialized;
     using System.ComponentModel;
     using System.IO;
+    using System.Threading;
+    using System.Threading.Tasks;
     using System.Windows.Threading;
     using HandBrake.ApplicationServices.Model;
     using HandBrake.ApplicationServices.Parsing;
@@ -239,6 +241,16 @@
             {
                 scanService.Scan(Path.Combine(SourceDrive.RootDirectory.FullName, "VIDEO_TS"), 0);
             }
+        }
+
+        public override void SelectMetadata(object metadata)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<object[]> StartQueryMetadata(string text, out CancellationToken token)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -8,6 +8,8 @@
     using HandBrake.ApplicationServices;
     using HandBrake.ApplicationServices.Model;
     using HandBrake.ApplicationServices.Services;
+using System.Threading.Tasks;
+using System.Threading;
 
     public abstract class EncodeInfo : DispatcherObject, INotifyPropertyChanged
     {
@@ -207,6 +209,8 @@
                 });
         }
 
+        public abstract void SelectMetadata(object metadata);
+
         public void Start()
         {
             this.jobQueue.Clear();
@@ -224,6 +228,8 @@
                 this.encodingQueue.Start();
             }
         }
+
+        public abstract Task<object[]> StartQueryMetadata(string text, out CancellationToken token);
 
         public void Stop()
         {

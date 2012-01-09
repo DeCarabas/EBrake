@@ -353,36 +353,35 @@
             public string TVShowOutputPath { get; set; }
         }
 
-        CancellationTokenSource movieQueryCancellation;
-
-        void AutoCompleteBox_Populating(object sender, PopulatingEventArgs e)
+        void OnMetadataBoxPopulating(object sender, PopulatingEventArgs e)
         {
+            var box = (AutoCompleteBox)sender;
+            var encodeInfo = (EncodeInfo)box.DataContext;
+
             e.Cancel = true;
-
-            if (this.movieQueryCancellation != null) { this.movieQueryCancellation.Cancel(); }
-            this.movieQueryCancellation = new CancellationTokenSource();
-            CancellationToken token = this.movieQueryCancellation.Token;
-
-            MovieInfo.StartQueryMetadata(TitleBox.SearchText, token)
-                .ContinueWith(t => Dispatcher.BeginInvoke(UpdateMetadata, t, token), token);            
+            
+            CancellationToken token;
+            Task<object[]> task = encodeInfo.StartQueryMetadata(box.SearchText, out token);
+            task.ContinueWith(t => Dispatcher.BeginInvoke(UpdateQueryResults, box, t, token), token);
         }
 
-        void UpdateMetadata(Task<TmdbMovie[]> task, CancellationToken token)
+        void UpdateQueryResults(AutoCompleteBox box, Task<object[]> task, CancellationToken token)
         {
             VerifyAccess();
             //
             // Last chance for cancellation... after this, we know we won't get canceled because cancellation can 
             // only happen on this thread.
             //
-            if (task.Status != TaskStatus.RanToCompletion || token.IsCancellationRequested) { return; }            
+            if (task.Status != TaskStatus.RanToCompletion || token.IsCancellationRequested) { return; }
 
-            TitleBox.ItemsSource = task.Result;
-            TitleBox.PopulateComplete();
+            box.ItemsSource = task.Result;
+            box.PopulateComplete();
         }
 
-        private void TitleBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        void OnSelectedMetadataChanged(object sender, SelectionChangedEventArgs e)
         {
-            MovieEncodeInfo.SelectMetadata((TmdbMovie)TitleBox.SelectedItem);
+            var box = (AutoCompleteBox)sender;
+            ((EncodeInfo)box.DataContext).SelectMetadata(box.SelectedItem);
         }
     }
 }

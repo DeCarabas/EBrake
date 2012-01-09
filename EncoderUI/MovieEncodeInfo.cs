@@ -4,6 +4,9 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using EBrake.Metadata;
     using EBrake.Metadata.Tmdb;
     using HandBrake.ApplicationServices.Model;
     using HandBrake.ApplicationServices.Services;
@@ -15,6 +18,7 @@
 
         string backdrop = stockBackdrop;
         string movieTitle;
+        CancellationTokenSource queryCancellationToken;
 
         public MovieEncodeInfo(MainWindow mainWindow, Queue encodingQueue)
             : base(mainWindow, encodingQueue)
@@ -84,14 +88,26 @@
             Notify("InfoError");
         }
 
-        public void SelectMetadata(TmdbMovie movie)
-        {                        
+        public override void SelectMetadata(object metadata)
+        {
+            TmdbMovie movie = metadata as TmdbMovie;
             TmdbImage image = null;
             if (movie != null && movie.Backdrops != null)
             {
                 image = movie.Backdrops.OrderByDescending(i => i.Image.Width).FirstOrDefault();
             }            
             if (image != null) { Backdrop = image.Image.Url; } else { Backdrop = stockBackdrop; }
+        }
+
+        public override Task<object[]> StartQueryMetadata(string text, out CancellationToken token)
+        {
+            VerifyAccess();
+
+            if (this.queryCancellationToken != null) { this.queryCancellationToken.Cancel(); }
+            this.queryCancellationToken = new CancellationTokenSource();
+            token = this.queryCancellationToken.Token;
+
+            return MovieInfo.StartQueryMetadata(text, token).ContinueWith(t => (object[])t.Result, token);
         }
     }
 }

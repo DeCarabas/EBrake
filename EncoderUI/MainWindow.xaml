@@ -60,6 +60,9 @@
         </Style>
         
         <Style TargetType="Toolbox:AutoCompleteBox" x:Key="MetadataBox">
+            <EventSetter Event="Populating" Handler="OnMetadataBoxPopulating" />
+            <EventSetter Event="SelectionChanged" Handler="OnSelectedMetadataChanged" />
+            
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="FontSize" Value="24" />
             <Setter Property="Margin" Value="10" />
@@ -71,6 +74,13 @@
                     <Style TargetType="TextBox">
                         <Setter Property="TextAlignment" Value="Left" />
                     </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock FontSize="24" Opacity="0.9" Text="{Binding}" />
+                    </DataTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -107,19 +117,10 @@
                             </Grid.ColumnDefinitions>
                             <TextBlock Style="{StaticResource entryLabel}" Text="Title" VerticalAlignment="Center" 
                                        Margin="10,0,0,0"/>
-                            <Toolbox:AutoCompleteBox Grid.Column="1" Style="{StaticResource MetadataBox}"                                                  
-                                                 Text="{Binding Path=MovieTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Name="TitleBox" Populating="AutoCompleteBox_Populating"
-                                                 ValueMemberBinding="{Binding Path=DisplayName}"
-                                                 SelectionChanged="TitleBox_SelectionChanged">
-                                <Toolbox:AutoCompleteBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock FontSize="24" Opacity="0.9" Text="{Binding Path=DisplayName}" />
-                                    </DataTemplate>
-                                </Toolbox:AutoCompleteBox.ItemTemplate>
-                            </Toolbox:AutoCompleteBox>
+                            <Toolbox:AutoCompleteBox 
+                                Grid.Column="1" Style="{StaticResource MetadataBox}"                                                  
+                                Text="{Binding Path=MovieTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </Grid>
-
 
                         <ProgressBar Grid.Row="3" Value="{Binding Path=PercentComplete}" />
                         <TextBlock Grid.Row="4" HorizontalAlignment="Center" Text="{Binding Path=ETA}" />

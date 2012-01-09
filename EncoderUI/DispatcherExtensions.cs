@@ -19,5 +19,10 @@
         {
             return dispatcher.BeginInvoke(a, new object[] { p1, p2 });
         }
+
+        public static DispatcherOperation BeginInvoke<T1, T2, T3>(this Dispatcher dispatcher, Action<T1, T2, T3> a, T1 p1, T2 p2, T3 p3)
+        {
+            return dispatcher.BeginInvoke(a, new object[] { p1, p2, p3 });
+        }    
     }
 }
