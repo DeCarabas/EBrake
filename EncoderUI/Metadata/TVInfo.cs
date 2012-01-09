@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
@@ -22,7 +24,7 @@
             get
             {
                 if (BannerMirrors == null) { GetMirrors(); }
-                return BannerMirrors[Random.Next(BannerMirrors.Length)] + "/api/" + TheTVDBKey + "/";
+                return BannerMirrors[Random.Next(BannerMirrors.Length)] + "/banners/";
             }
         }
 
@@ -57,9 +59,9 @@
                 using (var stream = response.GetResponseStream())
                 {
                     var doc = XDocument.Load(stream);
-                    foreach (XElement mirror in doc.Ancestors("Mirror"))
+                    foreach (XElement mirror in doc.Descendants("Mirror"))
                     {
-                        string baseUri = mirror.Element("mirrorbase").Value;
+                        string baseUri = mirror.Element("mirrorpath").Value;
                         int type = Int32.Parse(mirror.Element("typemask").Value);
 
                         if ((type & 1) != 0) { xmlMirrorList.Add(baseUri); }
@@ -72,6 +74,24 @@
             XmlMirrors = xmlMirrorList.ToArray();
             BannerMirrors = bannerMirrorList.ToArray();
             ZipMirrors = zipMirrorList.ToArray();
+        }
+
+        static double GetRating(XElement element)
+        {
+            if (String.IsNullOrWhiteSpace(element.Value)) { return 0; }
+            return Double.Parse(element.Value);
+        }
+
+        static string BuildBannersURL(string id)
+        {
+            string url = XmlRoot + "series/" + id + "/banners.xml";
+            return url;
+        }
+
+        static string BuildFullURL(string id)
+        {
+            string url = XmlRoot + "series/" + id + "/all/en.zip";
+            return url;
         }
 
         static string BuildQueryUrl(string title)
@@ -97,16 +117,46 @@
                         var results = new List<TVDBSeries>();
 
                         XDocument doc = XDocument.Load(stream);
-                        foreach (XElement element in doc.Ancestors("Series"))
+                        foreach (XElement element in doc.Descendants("Series"))
                         {
                             results.Add(TVDBSeries.FromSearchResult(element, BannerRoot));
                             cancellationToken.ThrowIfCancellationRequested();
                         }
 
                         return results.ToArray();
-                    }                    
+                    }
                 }
             }, cancellationToken);
+        }
+
+        public static Task<TVDBSeries> StartQueryMetadataDetails(string id, CancellationToken cancellationToken)
+        {
+            return Task.Factory.StartNew(() =>
+                {
+                    var webRequest = (HttpWebRequest)WebRequest.Create(BuildBannersURL(id));
+                    using (var response = (HttpWebResponse)webRequest.GetResponse())
+                    using (Stream responseStream = response.GetResponseStream())
+                    {
+                        // TODO: Get everything; load zip file, &c.
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        XDocument doc = XDocument.Load(responseStream);
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        // OK, here we go... time to find ourselves the best banner!
+                        var posters =
+                            from element in doc.Descendants("Banner")
+                            where element.Element("BannerType").Value == "poster"
+                            orderby GetRating(element.Element("Rating")) descending
+                            select element.Element("BannerPath").Value;
+
+                        string path = posters.FirstOrDefault();
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        if (path != null) { path = BannerRoot + path; }
+                        return new TVDBSeries { Banner = path };
+                    }
+                });
         }
     }
 }

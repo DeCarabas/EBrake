@@ -108,6 +108,6 @@
             token = this.queryCancellationToken.Token;
 
             return MovieInfo.StartQueryMetadata(text, token).ContinueWith(t => (object[])t.Result, token);
-        }
+        }        
     }
 }

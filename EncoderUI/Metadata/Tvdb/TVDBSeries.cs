@@ -37,5 +37,10 @@
         {
             return (element != null) ? element.Value : String.Empty;
         }
+
+        public override string ToString()
+        {
+            return SeriesName;
+        }
     }
 }

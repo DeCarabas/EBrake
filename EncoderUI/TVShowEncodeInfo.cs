@@ -12,12 +12,19 @@
     using HandBrake.ApplicationServices.Model;
     using HandBrake.ApplicationServices.Parsing;
     using HandBrake.ApplicationServices.Services;
+    using EBrake.Metadata;
+    using EBrake.Metadata.Tvdb;
 
     public sealed class TVShowEncodeInfo : EncodeInfo
     {
+        const string stockBackdrop = "/EBrake;component/Static.jpg";
+
+        string backdrop = stockBackdrop;
         readonly ObservableCollection<TitleEncodeInfo> episodes = new ObservableCollection<TitleEncodeInfo>();
         bool isScanning;
+        CancellationTokenSource metaCancellationToken;
         bool propagating;
+        CancellationTokenSource queryCancellationToken;
         readonly ScanService scanService = new ScanService();
         string series;
 
@@ -31,6 +38,12 @@
             this.scanService.ScanCompleted += OnScanCompleted;
 
             ScanDisc();
+        }
+
+        public string Backdrop
+        {
+            get { return this.backdrop; }
+            set { this.backdrop = value; Notify("Backdrop"); }
         }
 
         public IList<TitleEncodeInfo> Episodes { get { return this.episodes; } }
@@ -245,12 +258,42 @@
 
         public override void SelectMetadata(object metadata)
         {
-            throw new NotImplementedException();
+            TVDBSeries series = metadata as TVDBSeries;
+            if (series != null)
+            {
+                if (this.metaCancellationToken != null) { this.metaCancellationToken.Cancel(); }
+                this.metaCancellationToken = new CancellationTokenSource();
+                CancellationToken token = this.metaCancellationToken.Token;
+
+                TVInfo.StartQueryMetadataDetails(series.SeriesId, token).ContinueWith(
+                    t => Dispatcher.BeginInvoke(UpdateFullMetadata, t, token), token);
+            }
+        }
+
+        void UpdateFullMetadata(Task<TVDBSeries> task, CancellationToken token)
+        {
+            VerifyAccess();
+            if (task.Status != TaskStatus.RanToCompletion || token.IsCancellationRequested) { return; }
+
+            if (!String.IsNullOrWhiteSpace(task.Result.Banner))
+            {
+                Backdrop = task.Result.Banner;
+            }
+            else
+            {
+                Backdrop = stockBackdrop;
+            }
         }
 
         public override Task<object[]> StartQueryMetadata(string text, out CancellationToken token)
         {
-            throw new NotImplementedException();
+            VerifyAccess();
+
+            if (this.queryCancellationToken != null) { this.queryCancellationToken.Cancel(); }
+            this.queryCancellationToken = new CancellationTokenSource();
+            token = this.queryCancellationToken.Token;
+
+            return TVInfo.StartQueryMetadata(text, token).ContinueWith(t => (object[])t.Result, token);
         }
     }
 }

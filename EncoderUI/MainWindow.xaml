@@ -118,7 +118,7 @@
                             <TextBlock Style="{StaticResource entryLabel}" Text="Title" VerticalAlignment="Center" 
                                        Margin="10,0,0,0"/>
                             <Toolbox:AutoCompleteBox 
-                                Grid.Column="1" Style="{StaticResource MetadataBox}"                                                  
+                                Grid.Column="1" Style="{StaticResource MetadataBox}"
                                 Text="{Binding Path=MovieTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </Grid>
 
@@ -150,8 +150,8 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Image Grid.RowSpan="6" Source="/EBrake;component/Static.jpg" 
-                                HorizontalAlignment="Center"  Stretch="UniformToFill" />
+                        <Image Grid.RowSpan="6" Source="{Binding Backdrop}" 
+                               HorizontalAlignment="Center"  Stretch="UniformToFill" />
 
                         <Button Click="OnFixSettingsClicked" Style="{StaticResource SettingsWarningBar}" />
 
@@ -160,8 +160,12 @@
                             enable/disable of the "start" button happens naturally. (There may not be a 
                             focus-change event to force the binding.)
                         -->
-                        <TextBox Grid.Row="1" Text="{Binding Path=Series, UpdateSourceTrigger=PropertyChanged}" 
-                                    Margin="10" TextAlignment="Center" FontSize="24" Opacity="0.9" />
+                        <Toolbox:AutoCompleteBox 
+                                Grid.Row="1" Style="{StaticResource MetadataBox}"
+                                Text="{Binding Path=Series, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <!--<TextBox Grid.Row="1" Text="{Binding Path=Series, UpdateSourceTrigger=PropertyChanged}" 
+                                    Margin="10" TextAlignment="Center" FontSize="24" Opacity="0.9" />-->
                         <TextBlock Grid.Row="2" Style="{StaticResource entryLabel}" Text="Series" />
 
                         <Grid Grid.Row="3" Background="Gray" TextBlock.FontSize="14" TextBlock.Foreground="White" 
