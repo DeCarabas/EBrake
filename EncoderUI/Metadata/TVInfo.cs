@@ -144,19 +144,59 @@
                         cancellationToken.ThrowIfCancellationRequested();
 
                         // OK, here we go... time to find ourselves the best banner!
-                        var posters =
-                            from element in doc.Descendants("Banner")
-                            where element.Element("BannerType").Value == "poster"
-                            orderby GetRating(element.Element("Rating")) descending
-                            select element.Element("BannerPath").Value;
+                        string path = null;
+                        var posters = doc.Descendants("Banner").ToArray();
+                        if (posters.Length > 0)
+                        {
+                            Array.Sort(posters, BannerComparer.Instance);
+                            path = posters[posters.Length-1].Element("BannerPath").Value;
 
-                        string path = posters.FirstOrDefault();
-                        cancellationToken.ThrowIfCancellationRequested();
-
+                            cancellationToken.ThrowIfCancellationRequested();
+                        }
                         if (path != null) { path = BannerRoot + path; }
                         return new TVDBSeries { Banner = path };
                     }
                 });
+        }
+
+        class BannerComparer : IComparer<XElement>
+        {
+            public static readonly IComparer<XElement> Instance = new BannerComparer();
+
+            public int Compare(XElement x, XElement y)
+            {
+                if (Object.Equals(x, y)) { return 0; }
+                if (x == null) { return 1; }
+                if (y == null) { return -1; }
+
+                // Prefer fan art...
+                int xType = RateType(x);
+                int yType = RateType(y);
+                int result = xType.CompareTo(yType);
+                if (result != 0) { return result; }
+
+                double xRating = GetRating(x.Element("Rating"));
+                double yRating = GetRating(y.Element("Rating"));
+                result = xRating.CompareTo(yRating);
+                return result;
+            }
+
+            public int RateType(XElement banner)
+            {
+                string type = banner.Element("BannerType").Value;
+                switch(type)
+                {
+                    case "fanart":
+                        return 3;
+                    case "poster":
+                        return 2;
+                    case "season":
+                        return 1;
+                    case "series":
+                    default:
+                        return 0;
+                }
+            }
         }
     }
 }
