@@ -73,6 +73,9 @@
     <Reference Include="HandBrake.ApplicationServices">
       <HintPath>$(HandbrakePath)\HandBrake.ApplicationServices.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="MahApps.Metro, Version=0.4.0.17, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MahApps.Metro.0.4.0.17\lib\net40\MahApps.Metro.dll</HintPath>

@@ -1,11 +1,15 @@
 ﻿namespace EBrake.Metadata.Tvdb
 {
     using System;
+    using System.Collections.Generic;
     using System.Xml.Linq;
 
     public class TVDBSeries
     {
+        readonly Dictionary<Tuple<string, string>, string> episodes = new Dictionary<Tuple<string, string>, string>();
+
         public string Banner { get; set; }
+        public IDictionary<Tuple<string, string>, string> Episodes { get { return this.episodes; } }
         public string FirstAired { get; set; }
         public string Id { get; set; }
         public string ImdbId { get; set; }
@@ -14,7 +18,7 @@
         public string SeriesId { get; set; }
         public string SeriesName { get; set; }
         public string Zap2ItId { get; set; }        
-
+        
         public static TVDBSeries FromSearchResult(XElement element, string bannerRoot)
         {
             var series = new TVDBSeries();

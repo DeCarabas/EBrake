@@ -9,6 +9,7 @@
     using System.Threading.Tasks;
     using System.Xml.Linq;
     using EBrake.Metadata.Tvdb;
+    using ICSharpCode.SharpZipLib.Zip;
 
     public static class TVInfo
     {
@@ -100,6 +101,24 @@
             return url;
         }
 
+        static TVDBSeries ReadSeries(ZipFile zipFile, CancellationToken cancellationToken)
+        {
+            XDocument doc = XDocument.Load(zipFile.GetInputStream(zipFile.GetEntry("en.xml")));
+            var result = TVDBSeries.FromSearchResult(doc.Root.Element("Series"), BannerRoot);
+            foreach (XElement episode in doc.Root.Descendants("Episode"))
+            {
+                XElement number = episode.Element("EpisosdeNumber");
+                XElement season = episode.Element("SeasonNumber");
+                XElement name = episode.Element("EpisodeName");
+
+                if (number != null && season != null && name != null)
+                {
+                    result.Episodes[Tuple.Create(season.Value, number.Value)] = name.Value;
+                }
+            }
+            return result;
+        }
+
         public static Task<TVDBSeries[]> StartQueryMetadata(string title, CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(() =>
@@ -129,32 +148,53 @@
             }, cancellationToken);
         }
 
+        static string SelectBanner(ZipFile zipFile, CancellationToken cancellationToken)
+        {
+            XDocument doc = XDocument.Load(zipFile.GetInputStream(zipFile.GetEntry("banners.xml")));
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // OK, here we go... time to find ourselves the best banner!
+            string path = null;
+            var posters = doc.Descendants("Banner").ToArray();
+            if (posters.Length > 0)
+            {
+                Array.Sort(posters, BannerComparer.Instance);
+                path = posters[posters.Length - 1].Element("BannerPath").Value;
+
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+            if (path != null) { path = BannerRoot + path; }
+            return path;
+        }
+
         public static Task<TVDBSeries> StartQueryMetadataDetails(string id, CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(() =>
                 {
-                    var webRequest = (HttpWebRequest)WebRequest.Create(BuildBannersURL(id));
+                    var webRequest = (HttpWebRequest)WebRequest.Create(BuildFullURL(id));
                     using (var response = (HttpWebResponse)webRequest.GetResponse())
-                    using (Stream responseStream = response.GetResponseStream())
+                    using (Stream responseStream = response.GetResponseStream())                    
                     {
                         // TODO: Get everything; load zip file, &c.
                         cancellationToken.ThrowIfCancellationRequested();
 
-                        XDocument doc = XDocument.Load(responseStream);
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        // OK, here we go... time to find ourselves the best banner!
-                        string path = null;
-                        var posters = doc.Descendants("Banner").ToArray();
-                        if (posters.Length > 0)
+                        byte[] buffer = new byte[response.ContentLength];
+                        int offset = 0, bytesRead;
+                        do
                         {
-                            Array.Sort(posters, BannerComparer.Instance);
-                            path = posters[posters.Length-1].Element("BannerPath").Value;
-
                             cancellationToken.ThrowIfCancellationRequested();
+                            bytesRead = responseStream.Read(buffer, offset, buffer.Length - offset);
+                            offset += bytesRead;
+                        } while (bytesRead > 0 && offset <= buffer.Length);
+                        
+                        using (ZipFile zipFile = new ZipFile(new MemoryStream(buffer)))
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+
+                            TVDBSeries series = ReadSeries(zipFile, cancellationToken);
+                            series.Banner = SelectBanner(zipFile, cancellationToken);
+                            return series;
                         }
-                        if (path != null) { path = BannerRoot + path; }
-                        return new TVDBSeries { Banner = path };
                     }
                 });
         }

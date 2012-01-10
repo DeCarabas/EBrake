@@ -9,11 +9,11 @@
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows.Threading;
+    using EBrake.Metadata;
+    using EBrake.Metadata.Tvdb;
     using HandBrake.ApplicationServices.Model;
     using HandBrake.ApplicationServices.Parsing;
     using HandBrake.ApplicationServices.Services;
-    using EBrake.Metadata;
-    using EBrake.Metadata.Tvdb;
 
     public sealed class TVShowEncodeInfo : EncodeInfo
     {
