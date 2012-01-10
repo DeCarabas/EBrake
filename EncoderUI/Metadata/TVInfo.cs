@@ -107,7 +107,7 @@
             var result = TVDBSeries.FromSearchResult(doc.Root.Element("Series"), BannerRoot);
             foreach (XElement episode in doc.Root.Descendants("Episode"))
             {
-                XElement number = episode.Element("EpisosdeNumber");
+                XElement number = episode.Element("EpisodeNumber");
                 XElement season = episode.Element("SeasonNumber");
                 XElement name = episode.Element("EpisodeName");
 

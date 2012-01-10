@@ -27,6 +27,7 @@
         CancellationTokenSource queryCancellationToken;
         readonly ScanService scanService = new ScanService();
         string series;
+        TVDBSeries seriesMetadata;
 
         public TVShowEncodeInfo(MainWindow window, Queue encodingQueue)
             : base(window, encodingQueue)
@@ -75,7 +76,15 @@
         public string Series
         {
             get { return this.series; }
-            set { this.series = value; Notify("Series"); }
+            set 
+            {
+                if (!String.Equals(this.series, value))
+                {
+                    this.series = value; 
+                    this.seriesMetadata = null; 
+                    Notify("Series");
+                }
+            }
         }
 
         protected override void AddEncodingJobs(List<Job> encodingQueue)
@@ -237,6 +246,25 @@
                         }
                     }
                 }
+
+                // Fill in titles, if I can...
+                if (this.seriesMetadata != null)
+                {
+                    for (int i = 0; i < this.episodes.Count; i++)
+                    {
+                        if (!String.IsNullOrWhiteSpace(this.episodes[i].Season) &&
+                            !String.IsNullOrWhiteSpace(this.episodes[i].Episode) &&
+                            String.IsNullOrWhiteSpace(this.episodes[i].EpisodeTitle))
+                        {
+                            string title;
+                            var tuple = Tuple.Create(this.episodes[i].Season, this.episodes[i].Episode);
+                            if (this.seriesMetadata.Episodes.TryGetValue(tuple, out title))
+                            {
+                                this.episodes[i].EpisodeTitle = title;
+                            }
+                        }
+                    }
+                }
             }
             finally
             {
@@ -275,9 +303,10 @@
             VerifyAccess();
             if (task.Status != TaskStatus.RanToCompletion || token.IsCancellationRequested) { return; }
 
+            this.seriesMetadata = task.Result;
             if (!String.IsNullOrWhiteSpace(task.Result.Banner))
             {
-                Backdrop = task.Result.Banner;
+                Backdrop = this.seriesMetadata.Banner;
             }
             else
             {
