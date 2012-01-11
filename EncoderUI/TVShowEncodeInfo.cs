@@ -248,7 +248,7 @@
                 }
 
                 // Fill in titles, if I can...
-                if (this.seriesMetadata != null)
+                if ((args.PropertyName == "Episode" || args.PropertyName == "Season") && this.seriesMetadata != null)
                 {
                     for (int i = 0; i < this.episodes.Count; i++)
                     {
