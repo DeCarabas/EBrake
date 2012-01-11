@@ -81,7 +81,7 @@
                 if (!String.Equals(this.series, value))
                 {
                     this.series = value; 
-                    this.seriesMetadata = null; 
+                    this.seriesMetadata = null;
                     Notify("Series");
                 }
             }
@@ -295,6 +295,11 @@
 
                 TVInfo.StartQueryMetadataDetails(series.SeriesId, token).ContinueWith(
                     t => Dispatcher.BeginInvoke(UpdateFullMetadata, t, token), token);
+            }
+            else
+            {
+                this.seriesMetadata = null;
+                Backdrop = stockBackdrop;
             }
         }
 
