@@ -160,13 +160,17 @@
                             enable/disable of the "start" button happens naturally. (There may not be a 
                             focus-change event to force the binding.)
                         -->
-                        <Toolbox:AutoCompleteBox 
-                                Grid.Row="1" Style="{StaticResource MetadataBox}"
-                                Text="{Binding Path=Series, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <Grid Grid.Row="1" Margin="20,0,20,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
 
-                        <!--<TextBox Grid.Row="1" Text="{Binding Path=Series, UpdateSourceTrigger=PropertyChanged}" 
-                                    Margin="10" TextAlignment="Center" FontSize="24" Opacity="0.9" />-->
-                        <TextBlock Grid.Row="2" Style="{StaticResource entryLabel}" Text="Series" />
+                            <TextBlock Style="{StaticResource entryLabel}" Text="Series" Margin="10,0,0,0" 
+                                       VerticalAlignment="Center" />
+                            <Toolbox:AutoCompleteBox Grid.Column="1" Style="{StaticResource MetadataBox}"
+                                Text="{Binding Path=Series, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </Grid>
 
                         <Grid Grid.Row="3" Background="Gray" TextBlock.FontSize="14" TextBlock.Foreground="White" 
                                 HorizontalAlignment="Stretch" Margin="10,0,10,0" Opacity="0.9" Focusable="False" >
