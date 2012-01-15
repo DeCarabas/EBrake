@@ -63,8 +63,14 @@
 
             string outputFile = Path.Combine(movieDirectory, EscapeFileName(baseName) + ".m4v");
 
-            string commandLine = "--main-feature " +
-                GetStandardCommandLine(Path.Combine(SourceDrive.RootDirectory.FullName, "VIDEO_TS"), outputFile);
+            string inputPath = SourceDrive.RootDirectory.FullName;
+            if (Directory.Exists(Path.Combine(inputPath, "VIDEO_TS")))
+            {
+                inputPath = Path.Combine(inputPath, "VIDEO_TS");
+            }
+            inputPath = inputPath.Replace(@"\", @"\\");
+            
+            string commandLine = "--main-feature " + GetStandardCommandLine(inputPath, outputFile);
 
             encodingQueue.Add(new Job
             {
