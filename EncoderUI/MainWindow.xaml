@@ -100,7 +100,7 @@
                             <RowDefinition Height="auto" />
                         </Grid.RowDefinitions>
 
-                        <Image Grid.RowSpan="5" Source="{Binding Backdrop}" 
+                        <Image Grid.RowSpan="3" Source="{Binding Backdrop}" 
                                 HorizontalAlignment="Center" Stretch="UniformToFill" />
 
                         <Button Click="OnFixSettingsClicked" Style="{StaticResource SettingsWarningBar}" />
