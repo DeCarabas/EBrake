@@ -25,7 +25,7 @@
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : MetroWindow
+    public partial class MainWindow : Window
     {
         public static readonly DependencyProperty MovieEncodeInfoProperty = DependencyProperty.Register(
             "MovieEncodeInfo", typeof(MovieEncodeInfo), typeof(MainWindow));
@@ -275,8 +275,12 @@
 
         void OnWindowTopMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.RightButton != MouseButtonState.Pressed && e.MiddleButton != MouseButtonState.Pressed)
+            if (e.LeftButton == MouseButtonState.Pressed &&
+                e.RightButton != MouseButtonState.Pressed &&
+                e.MiddleButton != MouseButtonState.Pressed)
+            {
                 DragMove();
+            }
         }
 
         void SaveSettings()

@@ -1,5 +1,10 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:Behaviours="clr-namespace:MahApps.Metro.Behaviours;assembly=MahApps.Metro"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:LocalControls="clr-namespace:EBrake.Controls"
+>
 
     <SolidColorBrush x:Key="WarningBrush" Color="#FFFFE1" />
 
@@ -9,7 +14,7 @@
         <Setter Property="Height" Value="auto" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="VerticalAlignment" Value="Top" />        
+        <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
@@ -43,7 +48,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-   
+
     <Style TargetType="TextBlock" x:Key="entryLabel">
         <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="HorizontalAlignment" Value="Center" />
@@ -69,6 +74,68 @@
     <Style TargetType="TextBlock" x:Key="textValue">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Left" />
+    </Style>
+
+    <!--
+        NOTE: This style is based on the one in MahApps.Metro. It's "fixed" by making it so that ColumnDefinition1,
+        there, is size * instead of size 0, and the ContentPanel gets Grid.ColumnSpan="2". I removed all support for
+        other orientations, just so we wouldn't get confused. (And I can't be bothered fixing all the orientations.
+        I might do that for my submission to MahApps.Metro, though.)
+    -->
+    <Style TargetType="TabControl" x:Key="fixedTabControl">
+        <Setter Property="Background" Value="{x:Null}" />
+        <Setter Property="BorderBrush" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabControl}">
+                    <Grid ClipToBounds="True"
+                          SnapsToDevicePixels="True"
+                          KeyboardNavigation.TabNavigation="Local">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition x:Name="ColumnDefinition0" Width="Auto" />
+                            <ColumnDefinition x:Name="ColumnDefinition1" Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition x:Name="RowDefinition0" Height="Auto" />
+                            <RowDefinition x:Name="RowDefinition1" Height="*" />
+                        </Grid.RowDefinitions>
+                        <TabPanel x:Name="HeaderPanel"
+                                  Grid.Column="0"
+                                  IsItemsHost="True"
+                                  Margin="2,2,2,0"
+                                  Grid.Row="0"
+                                  KeyboardNavigation.TabIndex="1"
+                                  Panel.ZIndex="1" />
+                        <Border x:Name="ContentPanel"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding Background}"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                KeyboardNavigation.DirectionalNavigation="Contained"
+                                Grid.Row="1"
+                                KeyboardNavigation.TabIndex="2"
+                                KeyboardNavigation.TabNavigation="Local">
+                            <Controls:MetroContentControl Behaviours:Reload.OnSelectedTabChanged="True">
+                                <ContentPresenter x:Name="PART_SelectedContentHost"
+                                                  ContentTemplate="{TemplateBinding SelectedContentTemplate}"
+                                                  Content="{TemplateBinding SelectedContent}"
+                                                  ContentStringFormat="{TemplateBinding SelectedContentStringFormat}"
+                                                  ContentSource="SelectedContent"
+                                                  Margin="{TemplateBinding Padding}"
+                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            </Controls:MetroContentControl>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="TabItem">
