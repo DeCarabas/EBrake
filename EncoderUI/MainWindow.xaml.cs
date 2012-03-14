@@ -35,7 +35,7 @@
             "TVShowEncodeInfo", typeof(TVShowEncodeInfo), typeof(MainWindow));
 
         HwndSource interopSource;
-        readonly Queue encodeQueue = new Queue();
+        readonly Encode encodeQueue = new Encode();
         readonly ObservableCollection<DriveInfo> opticalDrives = new ObservableCollection<DriveInfo>();
         readonly ScanService scanService = new ScanService();
         readonly TaskScheduler wpfScheduler = TaskScheduler.FromCurrentSynchronizationContext();
@@ -311,20 +311,20 @@
             string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\HandBrake\\logs";
             if (!Directory.Exists(path)) { Directory.CreateDirectory(path); }
 
-            int instanceId = Process.GetProcessesByName("HandBrake").Length;
-            Init.SetupSettings(
-                versionString: "EncoderUI Quick Encoder v0.1",
-                instanceId: instanceId,
-                completionOption: "Do Nothing",
-                disableDvdNav: false,
-                growlEncode: false,
-                growlQueue: false,
-                processPriority: "Below Normal",
-                saveLogPath: "",
-                saveLogToSpecifiedPath: false,
-                saveLogWithVideo: false,
-                showCliForInGuiEncodeStatus: false,
-                preventSleep: false);
+            //int instanceId = Process.GetProcessesByName("HandBrake").Length;
+            //Init.SetupSettings(
+            //    versionString: "EncoderUI Quick Encoder v0.1",
+            //    instanceId: instanceId,
+            //    completionOption: "Do Nothing",
+            //    disableDvdNav: false,
+            //    growlEncode: false,
+            //    growlQueue: false,
+            //    processPriority: "Below Normal",
+            //    saveLogPath: "",
+            //    saveLogToSpecifiedPath: false,
+            //    saveLogWithVideo: false,
+            //    showCliForInGuiEncodeStatus: false,
+            //    preventSleep: false);
         }
 
         Task StartRefreshOpticalDrives()

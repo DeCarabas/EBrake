@@ -20,7 +20,7 @@
         string movieTitle;
         CancellationTokenSource queryCancellationToken;
 
-        public MovieEncodeInfo(MainWindow mainWindow, Queue encodingQueue)
+        public MovieEncodeInfo(MainWindow mainWindow, Encode encodingQueue)
             : base(mainWindow, encodingQueue)
         {
         }
@@ -54,7 +54,7 @@
             }
         }
 
-        protected override void AddEncodingJobs(List<Job> encodingQueue)
+        protected override void AddEncodingJobs(List<QueueTask> encodingQueue)
         {
             string baseName = MovieTitle.Trim();
 
@@ -72,7 +72,7 @@
             
             string commandLine = "--main-feature " + GetStandardCommandLine(inputPath, outputFile);
 
-            encodingQueue.Add(new Job
+            encodingQueue.Add(new QueueTask
             {
                 Query = commandLine,
                 Title = 0,
