@@ -20,7 +20,7 @@
         string movieTitle;
         CancellationTokenSource queryCancellationToken;
 
-        public MovieEncodeInfo(MainWindow mainWindow, Queue encodingQueue)
+        public MovieEncodeInfo(MainWindow mainWindow, Encode encodingQueue)
             : base(mainWindow, encodingQueue)
         {
         }
@@ -54,14 +54,14 @@
             }
         }
 
-        protected override void AddEncodingJobs(List<Job> encodingQueue)
+        protected override void AddEncodingJobs(List<QueueTask> encodingQueue)
         {
             string baseName = MovieTitle.Trim();
 
             string movieDirectory = Path.Combine(OutputPath, EscapeFileName(baseName));
             if (!Directory.Exists(movieDirectory)) { Directory.CreateDirectory(movieDirectory); }
 
-            string outputFile = Path.Combine(movieDirectory, EscapeFileName(baseName) + ".m4v");
+            string outputFile = Path.Combine(movieDirectory, EscapeFileName(baseName) + ".mkv");
 
             string inputPath = SourceDrive.RootDirectory.FullName;
             if (Directory.Exists(Path.Combine(inputPath, "VIDEO_TS")))
@@ -72,7 +72,7 @@
             
             string commandLine = "--main-feature " + GetStandardCommandLine(inputPath, outputFile);
 
-            encodingQueue.Add(new Job
+            encodingQueue.Add(new QueueTask
             {
                 Query = commandLine,
                 Title = 0,

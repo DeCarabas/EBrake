@@ -8,33 +8,34 @@
     using HandBrake.ApplicationServices;
     using HandBrake.ApplicationServices.Model;
     using HandBrake.ApplicationServices.Services;
-using System.Threading.Tasks;
-using System.Threading;
+    using System.Threading.Tasks;
+    using System.Threading;
+    using HandBrake.ApplicationServices.EventArgs;
 
     public abstract class EncodeInfo : DispatcherObject, INotifyPropertyChanged
     {
         // http://msdn.microsoft.com/en-us/library/windows/desktop/aa365247(v=vs.85).aspx
         static readonly char[] reservedCharacters = new char[] { '<', '>', ':', '"', '/', '\\', '|', '?', '*' };
 
-        readonly Queue encodingQueue;
+        readonly Encode encodingQueue;
         int encodeIndex;
         string eta;
         bool isEncoding;
-        readonly List<Job> jobQueue = new List<Job>();
+        readonly List<QueueTask> jobQueue = new List<QueueTask>();
         readonly MainWindow mainWindow;
         string outputPath;
         float percentComplete;
         SettingError settingError;
         double totalPercentComplete;
 
-        protected EncodeInfo(MainWindow mainWindow, Queue encodingQueue)
+        protected EncodeInfo(MainWindow mainWindow, Encode encodingQueue)
         {
             this.mainWindow = mainWindow;
             this.encodingQueue = encodingQueue;
 
             this.encodingQueue.EncodeStarted += OnEncodeStarted;
             this.encodingQueue.EncodeStatusChanged += OnEncodeStatusChanged;
-            this.encodingQueue.EncodeEnded += OnEncodeEnded;
+            this.encodingQueue.EncodeCompleted += OnEncodeEnded;
 
             DependencyPropertyDescriptor descriptor;
             descriptor = DependencyPropertyDescriptor.FromProperty(MainWindow.SourceDriveProperty, typeof(MainWindow));
@@ -110,7 +111,7 @@ using System.Threading;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected abstract void AddEncodingJobs(List<Job> encodingQueue);
+        protected abstract void AddEncodingJobs(List<QueueTask> encodingQueue);
 
         void CheckSettingErrors()
         {
@@ -139,8 +140,9 @@ using System.Threading;
 
         protected static string GetStandardCommandLine(string input, string output)
         {
+
             return String.Format(
-                "-o \"{0}\" -i \"{1}\" -Z \"High Profile\" --native-language eng ", output, input);
+                "-o \"{0}\" -i \"{1}\" -Z \"High Profile\" -E \"faac,copy:ac3\" -N \"eng\" -f \"mkv\" -m ", output, input);
         }
 
         protected virtual void Notify(string property)
@@ -157,7 +159,7 @@ using System.Threading;
             CheckSettingErrors();
         }
 
-        void OnEncodeEnded(object sender, EventArgs e)
+        void OnEncodeEnded(object sender, EncodeCompletedEventArgs e)
         {
             Dispatcher.BeginInvoke(() =>
                 {
@@ -165,13 +167,7 @@ using System.Threading;
                     this.encodeIndex++;
                     if (this.encodeIndex < this.jobQueue.Count)
                     {
-                        this.encodingQueue.Add(
-                            this.jobQueue[this.encodeIndex].Query,
-                            this.jobQueue[this.encodeIndex].Title,
-                            this.jobQueue[this.encodeIndex].Source,
-                            this.jobQueue[this.encodeIndex].Destination,
-                            this.jobQueue[this.encodeIndex].CustomQuery);
-                        this.encodingQueue.Start();
+                        this.encodingQueue.Start(this.jobQueue[this.encodeIndex], true);
 
                         TotalPercentComplete = Math.Round(
                             ((double)this.encodeIndex / (double)this.jobQueue.Count) * 100.0);
@@ -219,13 +215,7 @@ using System.Threading;
             AddEncodingJobs(this.jobQueue);
             if (this.jobQueue.Count > 0)
             {
-                this.encodingQueue.Add(
-                    this.jobQueue[0].Query,
-                    this.jobQueue[0].Title,
-                    this.jobQueue[0].Source,
-                    this.jobQueue[0].Destination,
-                    this.jobQueue[0].CustomQuery);
-                this.encodingQueue.Start();
+                this.encodingQueue.Start(this.jobQueue[0], true);
             }
         }
 

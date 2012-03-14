@@ -29,7 +29,7 @@
         string series;
         TVDBSeries seriesMetadata;
 
-        public TVShowEncodeInfo(MainWindow window, Queue encodingQueue)
+        public TVShowEncodeInfo(MainWindow window, Encode encodingQueue)
             : base(window, encodingQueue)
         {
             this.episodes.CollectionChanged += OnEpisodesChanged;
@@ -87,7 +87,7 @@
             }
         }
 
-        protected override void AddEncodingJobs(List<Job> encodingQueue)
+        protected override void AddEncodingJobs(List<QueueTask> encodingQueue)
         {
             string source = Path.Combine(SourceDrive.RootDirectory.FullName, "VIDEO_TS");
             string targetBase = Path.Combine(OutputPath, EscapeFileName(Series));
@@ -106,7 +106,7 @@
                 {
                     outputFileName += " " + titleInfo.EpisodeTitle;
                 }
-                outputFileName += ".m4v";
+                outputFileName += ".mkv";
 
                 string outputDirectory = Path.Combine(
                     targetBase, 
@@ -118,7 +118,7 @@
                 string commandLine = String.Format("-t {0} ", titleInfo.TitleNumber) + 
                     GetStandardCommandLine(source, outputFile);
 
-                encodingQueue.Add(new Job 
+                encodingQueue.Add(new QueueTask 
                 {
                     Query = commandLine, 
                     Title = titleInfo.TitleNumber, 
@@ -169,7 +169,7 @@
                 this.IsScanning = this.scanService.IsScanning;
                 this.episodes.Clear();
 
-                DVD dvd = this.scanService.SouceData;
+                Source dvd = this.scanService.SouceData;
                 if (dvd != null)
                 {
                     for (int i = 0; i < dvd.Titles.Count; i++)
@@ -280,7 +280,7 @@
             if (this.scanService.IsScanning) { scanService.Stop(); }
             if (SourceDrive != null && SourceDrive.IsReady)
             {
-                scanService.Scan(Path.Combine(SourceDrive.RootDirectory.FullName, "VIDEO_TS"), 0);
+                scanService.Scan(Path.Combine(SourceDrive.RootDirectory.FullName, "VIDEO_TS"), 0, 0);
             }
         }
 
